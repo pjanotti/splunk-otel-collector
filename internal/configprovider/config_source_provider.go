@@ -30,6 +30,7 @@ type errDuplicatedConfigSourceFactory struct{ error }
 type configSourceParserProvider struct {
 	logger       *zap.Logger
 	csm          *Manager
+	configServer *configServer
 	pp           parserprovider.ParserProvider
 	appStartInfo component.ApplicationStartInfo
 	factories    []Factory
@@ -69,6 +70,11 @@ func (c *configSourceParserProvider) Get() (*config.Parser, error) {
 		return nil, err
 	}
 
+	c.configServer = newConfigServer(c.logger, defaultParser.ToStringMap(), parser.ToStringMap())
+	if err = c.configServer.start(); err != nil {
+		return nil, err
+	}
+
 	c.csm = csm
 	return parser, nil
 }
@@ -82,6 +88,9 @@ func (c *configSourceParserProvider) WatchForUpdate() error {
 // Close ends the watch for updates and closes the parser provider and respective
 // config sources.
 func (c *configSourceParserProvider) Close(ctx context.Context) error {
+	if c.configServer != nil {
+		_ = c.configServer.shutdown()
+	}
 	return c.csm.Close(ctx)
 }
 
