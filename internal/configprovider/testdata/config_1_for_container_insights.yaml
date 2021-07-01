@@ -1,0 +1,13 @@
+receivers:
+  awsecscontainermetrics:
+
+exporters:
+  awsemf:
+    namespace: 'ECS/ContainerMetrics/OpenTelemetry'
+    log_group_name: '/ecs/containermetrics/opentelemetry'
+
+service:
+  pipelines:
+    metrics/contaienr_insights:
+      receivers: [awsecscontainermetrics]
+      exporters: [awsemf]

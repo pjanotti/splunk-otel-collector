@@ -249,6 +249,33 @@ map:
 	assert.NoError(t, manager.Close(ctx))
 }
 
+func TestConfigSourceManager_MockMerge(t *testing.T) {
+	ctx := context.Background()
+	manager := newManager(map[string]configsource.ConfigSource{
+		"merge": &mergeConfigSource{
+			Files: []string{
+				path.Join("testdata", "config_1_for_container_insights.yaml"),
+				path.Join("testdata", "config_2_for_app_metrics.yaml"),
+			},
+		},
+	})
+
+	file := path.Join("testdata", "mock_merge_initial_config.yaml")
+	cp, err := configparser.NewParserFromFile(file)
+	require.NoError(t, err)
+
+	expectedFile := path.Join("testdata", "mock_merge_combined.yaml")
+	expectedParser, err := configparser.NewParserFromFile(expectedFile)
+	require.NoError(t, err)
+	expectedCfg := expectedParser.ToStringMap()
+
+	res, err := manager.Resolve(ctx, cp)
+	require.NoError(t, err)
+	actualCfg := res.ToStringMap()
+	assert.Equal(t, expectedCfg, actualCfg)
+	assert.NoError(t, manager.Close(ctx))
+}
+
 func TestConfigSourceManager_RootInjection(t *testing.T) {
 	ctx := context.Background()
 	manager := newManager(map[string]configsource.ConfigSource{
