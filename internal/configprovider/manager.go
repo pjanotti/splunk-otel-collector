@@ -217,7 +217,21 @@ func (m *Manager) Resolve(ctx context.Context, parser *configparser.Parser) (*co
 			_ = m.retrieveEndAllSessions(ctx)
 			return nil, err
 		}
-		res.Set(k, value)
+
+		if k != "__root__" {
+			res.Set(k, value)
+			continue
+		}
+
+		// Injecting the data at the root level, it must be a map
+		rootMap, ok := value.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("attempt to inject a non-map at the root level %T", value)
+		}
+
+		for rootKey, rootValue := range rootMap {
+			res.Set(rootKey, rootValue)
+		}
 	}
 
 	if errs := m.retrieveEndAllSessions(ctx); len(errs) > 0 {

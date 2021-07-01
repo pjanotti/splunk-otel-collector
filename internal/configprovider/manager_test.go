@@ -249,6 +249,37 @@ map:
 	assert.NoError(t, manager.Close(ctx))
 }
 
+func TestConfigSourceManager_RootInjection(t *testing.T) {
+	ctx := context.Background()
+	manager := newManager(map[string]configsource.ConfigSource{
+		"tstcfgsrc": &testConfigSource{
+			ValueMap: map[string]valueEntry{
+				"valid_yaml_string": {Value: `
+bool: true
+int: 42
+source: string
+map:
+  k0: v0
+  k1: v1
+`},
+			}}})
+
+	file := path.Join("testdata", "inject_at_root.yaml")
+	cp, err := configparser.NewParserFromFile(file)
+	require.NoError(t, err)
+
+	expectedFile := path.Join("testdata", "inject_at_root_expected.yaml")
+	expectedParser, err := configparser.NewParserFromFile(expectedFile)
+	require.NoError(t, err)
+	expectedCfg := expectedParser.ToStringMap()
+
+	res, err := manager.Resolve(ctx, cp)
+	require.NoError(t, err)
+	actualCfg := res.ToStringMap()
+	assert.Equal(t, expectedCfg, actualCfg)
+	assert.NoError(t, manager.Close(ctx))
+}
+
 func TestConfigSourceManager_ArraysAndMaps(t *testing.T) {
 	ctx := context.Background()
 	manager := newManager(map[string]configsource.ConfigSource{
