@@ -18,11 +18,11 @@ package configprovider
 import (
 	"context"
 	"fmt"
+
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"go.opentelemetry.io/collector/config/configparser"
-
 	"go.opentelemetry.io/collector/config/experimental/configsource"
 )
 
@@ -33,14 +33,14 @@ type mergeConfigSource struct {
 	Files []string
 }
 
-var _ (configsource.ConfigSource) = (*mergeConfigSource)(nil)
-var _ (configsource.Session) = (*mergeConfigSource)(nil)
+var _ configsource.ConfigSource = (*mergeConfigSource)(nil)
+var _ configsource.Session = (*mergeConfigSource)(nil)
 
 func (m *mergeConfigSource) NewSession(context.Context) (configsource.Session, error) {
 	return m, nil
 }
 
-func (m *mergeConfigSource) Retrieve(ctx context.Context, selector string, params interface{}) (configsource.Retrieved, error) {
+func (m *mergeConfigSource) Retrieve(_ context.Context, _ string, _ interface{}) (configsource.Retrieved, error) {
 	mergedCfg := koanf.New(configparser.KeyDelimiter)
 	for _, fileName := range m.Files {
 		fileCfg := koanf.New(configparser.KeyDelimiter)
