@@ -196,6 +196,8 @@ func NewManager(parser *configparser.Parser, logger *zap.Logger, buildInfo compo
 		return nil, err
 	}
 
+	// TODO: check if "config_sources" is already in use etc, it should be a reserved name for config sources
+	cfgSources["config_sources"] = newMetaConfigSource(logger, cfgSources)
 	return newManager(cfgSources), nil
 }
 
@@ -519,7 +521,7 @@ func (m *Manager) retrieveConfigSourceData(ctx context.Context, name, cfgSrcInvo
 
 	// Expand any env vars on the selector and parameters. Nested config source usage
 	// is not supported.
-	cfgSrcInvoke = expandEnvVars(cfgSrcInvoke)
+	// cfgSrcInvoke = expandEnvVars(cfgSrcInvoke)
 	retrieved, err := m.expandConfigSource(ctx, cfgSrc, cfgSrcInvoke)
 	if err != nil {
 		return nil, err
