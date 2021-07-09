@@ -249,6 +249,33 @@ map:
 	assert.NoError(t, manager.Close(ctx))
 }
 
+func TestConfigSourceManager_ConfigSourcesMerge(t *testing.T) {
+	file := path.Join("testdata", "meta_config_source.yaml")
+	parser, err := configparser.NewParserFromFile(file)
+	require.NoError(t, err)
+
+	factories, err := makeFactoryMap([]Factory{
+		NewFactory(),
+	})
+
+	require.NoError(t, err)
+
+	manager, err := NewManager(parser, zap.NewNop(), component.DefaultBuildInfo(), factories)
+	require.NoError(t, err)
+
+	resolvedParser, err := manager.Resolve(context.Background(), parser)
+	require.NoError(t, err)
+
+	expectedFile := path.Join("testdata", "mock_merge_combined.yaml")
+	expectedParser, err := configparser.NewParserFromFile(expectedFile)
+	require.NoError(t, err)
+	expectedCfg := expectedParser.ToStringMap()
+
+	actualCfg := resolvedParser.ToStringMap()
+	assert.Equal(t, expectedCfg, actualCfg)
+	assert.NoError(t, manager.Close(context.Background()))
+}
+
 func TestConfigSourceManager_MockMerge(t *testing.T) {
 	ctx := context.Background()
 	manager := newManager(map[string]configsource.ConfigSource{

@@ -1,0 +1,9 @@
+config_sources:
+  include:
+
+# Inserting the configurations via different files and merging then.
+__root__: |
+  $config_sources: merge
+  sources:
+    - $include:./testdata/config_1_for_container_insights.yaml
+    - $include:./testdata/config_2_for_app_metrics.yaml
