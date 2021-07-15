@@ -17,6 +17,7 @@ package configprovider
 
 import (
 	"context"
+
 	"go.opentelemetry.io/collector/config/experimental/configsource"
 	"go.uber.org/zap"
 )

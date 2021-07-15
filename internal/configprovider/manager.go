@@ -519,9 +519,11 @@ func (m *Manager) retrieveConfigSourceData(ctx context.Context, name, cfgSrcInvo
 		return nil, newErrUnknownConfigSource(name)
 	}
 
-	// Expand any env vars on the selector and parameters. Nested config source usage
-	// is not supported.
-	// cfgSrcInvoke = expandEnvVars(cfgSrcInvoke)
+	// Expand any env vars on the selector and parameters. Special case for the meta config source:
+	// it shouldn't use expandEnvVars here otherwise config source parameters will be expanded into ""
+	if _, ok := cfgSrc.(*metaConfigSource); !ok {
+		cfgSrcInvoke = expandEnvVars(cfgSrcInvoke)
+	}
 	retrieved, err := m.expandConfigSource(ctx, cfgSrc, cfgSrcInvoke)
 	if err != nil {
 		return nil, err

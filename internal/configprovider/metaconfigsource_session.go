@@ -18,6 +18,7 @@ package configprovider
 import (
 	"context"
 	"fmt"
+
 	"github.com/spf13/cast"
 	"go.opentelemetry.io/collector/config/configparser"
 	"go.opentelemetry.io/collector/config/experimental/configsource"
@@ -63,7 +64,7 @@ func (m *metaCfgSrcSession) Retrieve(ctx context.Context, selector string, param
 	resolvedStruct := struct {
 		Sources []map[string]interface{} `mapstructure:"sources"`
 	}{}
-	if err := resolvedParser.UnmarshalExact(&resolvedStruct); err != nil {
+	if err = resolvedParser.UnmarshalExact(&resolvedStruct); err != nil {
 		return nil, &errInvalidRetrieveParams{fmt.Errorf("failed to unmarshall config sources used by meta config source: %w", err)}
 	}
 
@@ -79,9 +80,6 @@ func (m *metaCfgSrcSession) Retrieve(ctx context.Context, selector string, param
 				fmt.Printf("Config [%s] overwritten by config source %d\n", key, i)
 			}
 			res.Set(key, currParser.Get(key))
-		}
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse config source on entry %d passed to the meta config source: %w", i, err)
 		}
 	}
 
