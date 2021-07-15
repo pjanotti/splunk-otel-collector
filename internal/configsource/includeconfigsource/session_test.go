@@ -25,6 +25,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/config/configparser"
 	"go.opentelemetry.io/collector/config/experimental/configsource"
 )
 
@@ -66,7 +67,7 @@ func TestIncludeConfigSource_Session(t *testing.T) {
 			}()
 
 			file := path.Join("testdata", tt.selector)
-			r, err := s.Retrieve(ctx, file, tt.params)
+			r, err := s.Retrieve(ctx, file, configparser.NewParserFromStringMap(tt.params))
 			if tt.wantErr != nil {
 				assert.Nil(t, r)
 				require.IsType(t, tt.wantErr, err)

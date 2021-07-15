@@ -76,3 +76,7 @@ replace (
 	github.com/soheilhy/cmux => github.com/soheilhy/cmux v0.1.5-0.20210205191134-5ec6847320e5 // required for smartagentreceiver to drop google.golang.org/grpc/examples/helloworld/helloworld test dep
 	google.golang.org/grpc => google.golang.org/grpc v1.29.1 // required for smartagentreceiver's go.etcd.io/etcd dep
 )
+
+replace go.opentelemetry.io/collector => ../../otel/collector
+
+replace go.opentelemetry.io/collector/model => ../../otel/collector/model

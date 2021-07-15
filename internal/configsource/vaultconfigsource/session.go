@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/vault/api"
+	"go.opentelemetry.io/collector/config/configparser"
 	"go.opentelemetry.io/collector/config/experimental/configsource"
 	"go.uber.org/zap"
 
@@ -55,7 +56,7 @@ type vaultSession struct {
 
 var _ configsource.Session = (*vaultSession)(nil)
 
-func (v *vaultSession) Retrieve(_ context.Context, selector string, _ interface{}) (configsource.Retrieved, error) {
+func (v *vaultSession) Retrieve(_ context.Context, selector string, _ *configparser.Parser) (configsource.Retrieved, error) {
 	// By default assume that watcher is not supported. The exception will be the first
 	// value read from the vault secret.
 	watchForUpdateFn := watcherNotSupported

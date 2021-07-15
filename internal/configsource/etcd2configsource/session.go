@@ -21,6 +21,7 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"go.etcd.io/etcd/client"
+	"go.opentelemetry.io/collector/config/configparser"
 	"go.opentelemetry.io/collector/config/experimental/configsource"
 	"go.uber.org/zap"
 
@@ -46,7 +47,7 @@ func newSession(logger *zap.Logger, kapi client.KeysAPI) *etcd2Session {
 	}
 }
 
-func (s *etcd2Session) Retrieve(ctx context.Context, selector string, _ interface{}) (configsource.Retrieved, error) {
+func (s *etcd2Session) Retrieve(ctx context.Context, selector string, _ *configparser.Parser) (configsource.Retrieved, error) {
 	resp, err := s.kapi.Get(ctx, selector, nil)
 	if err != nil {
 		return nil, err

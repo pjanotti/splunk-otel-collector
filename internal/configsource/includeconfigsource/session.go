@@ -23,6 +23,7 @@ import (
 	"text/template"
 
 	"github.com/fsnotify/fsnotify"
+	"go.opentelemetry.io/collector/config/configparser"
 	"go.opentelemetry.io/collector/config/experimental/configsource"
 
 	"github.com/signalfx/splunk-otel-collector/internal/configprovider"
@@ -42,14 +43,18 @@ type includeSession struct {
 
 var _ configsource.Session = (*includeSession)(nil)
 
-func (is *includeSession) Retrieve(_ context.Context, selector string, params interface{}) (configsource.Retrieved, error) {
+func (is *includeSession) Retrieve(_ context.Context, selector string, paramsParser *configparser.Parser) (configsource.Retrieved, error) {
 	tmpl, err := template.ParseFiles(selector)
 	if err != nil {
 		return nil, err
 	}
 
+	paramsValue := (interface{})(nil)
+	if paramsParser != nil {
+		paramsValue = paramsParser.ToStringMap()
+	}
 	var buf bytes.Buffer
-	if err = tmpl.Execute(&buf, params); err != nil {
+	if err = tmpl.Execute(&buf, paramsValue); err != nil {
 		return nil, err
 	}
 

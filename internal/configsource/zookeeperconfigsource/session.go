@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	"github.com/go-zookeeper/zk"
+	"go.opentelemetry.io/collector/config/configparser"
 	"go.opentelemetry.io/collector/config/experimental/configsource"
 	"go.uber.org/zap"
 
@@ -43,7 +44,7 @@ func newSession(logger *zap.Logger, connect connectFunc) *zkSession {
 	}
 }
 
-func (s *zkSession) Retrieve(ctx context.Context, selector string, _ interface{}) (configsource.Retrieved, error) {
+func (s *zkSession) Retrieve(ctx context.Context, selector string, _ *configparser.Parser) (configsource.Retrieved, error) {
 	conn, err := s.connect(ctx)
 	if err != nil {
 		return nil, err

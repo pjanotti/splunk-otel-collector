@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cast"
 	"go.opentelemetry.io/collector/config/configparser"
 	"go.opentelemetry.io/collector/config/experimental/configsource"
 
@@ -48,10 +47,9 @@ type envVarSession struct {
 
 var _ configsource.Session = (*envVarSession)(nil)
 
-func (e *envVarSession) Retrieve(_ context.Context, selector string, params interface{}) (configsource.Retrieved, error) {
+func (e *envVarSession) Retrieve(_ context.Context, selector string, paramsParser *configparser.Parser) (configsource.Retrieved, error) {
 	actualParams := retrieveParams{}
-	if params != nil {
-		paramsParser := configparser.NewParserFromStringMap(cast.ToStringMap(params))
+	if paramsParser != nil {
 		if err := paramsParser.UnmarshalExact(&actualParams); err != nil {
 			return nil, &errInvalidRetrieveParams{fmt.Errorf("failed to unmarshall retrieve params: %w", err)}
 		}

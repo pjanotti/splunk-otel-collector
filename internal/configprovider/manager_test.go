@@ -303,8 +303,12 @@ func TestConfigSourceManager_ParamsHandling(t *testing.T) {
 	}
 
 	// Set OnRetrieve to check if the parameters were parsed as expected.
-	tstCfgSrc.OnRetrieve = func(ctx context.Context, selector string, params interface{}) error {
-		assert.Equal(t, tstCfgSrc.ValueMap[selector].Value, params)
+	tstCfgSrc.OnRetrieve = func(ctx context.Context, selector string, paramsParser *configparser.Parser) error {
+		paramsValue := (interface{})(nil)
+		if paramsParser != nil {
+			paramsValue = paramsParser.ToStringMap()
+		}
+		assert.Equal(t, tstCfgSrc.ValueMap[selector].Value, paramsValue)
 		return nil
 	}
 
@@ -440,9 +444,9 @@ func TestConfigSourceManager_EnvVarHandling(t *testing.T) {
 	}
 
 	// Intercept "params_key" and create an entry with the params themselves.
-	tstCfgSrc.OnRetrieve = func(ctx context.Context, selector string, params interface{}) error {
+	tstCfgSrc.OnRetrieve = func(ctx context.Context, selector string, paramsParser *configparser.Parser) error {
 		if selector == "params_key" {
-			tstCfgSrc.ValueMap[selector] = valueEntry{Value: params}
+			tstCfgSrc.ValueMap[selector] = valueEntry{Value: paramsParser.ToStringMap()}
 		}
 		return nil
 	}
@@ -679,7 +683,7 @@ func Test_parseCfgSrc(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cfgSrcName, selector, params, err := parseCfgSrc(tt.str)
+			cfgSrcName, selector, paramsParser, err := parseCfgSrc(tt.str)
 			if tt.wantErr {
 				assert.Error(t, err)
 				return
@@ -688,7 +692,12 @@ func Test_parseCfgSrc(t *testing.T) {
 			assert.NoError(t, err)
 			assert.Equal(t, tt.cfgSrcName, cfgSrcName)
 			assert.Equal(t, tt.selector, selector)
-			assert.Equal(t, tt.params, params)
+
+			paramsValue := (interface{})(nil)
+			if paramsParser != nil {
+				paramsValue = paramsParser.ToStringMap()
+			}
+			assert.Equal(t, tt.params, paramsValue)
 		})
 	}
 }
