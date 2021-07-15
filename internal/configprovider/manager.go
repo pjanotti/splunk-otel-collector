@@ -352,7 +352,7 @@ func (m *Manager) expandStringValues(ctx context.Context, value interface{}) (in
 // expandConfigSource retrieve data from the specified config source and injects them into
 // the configuration. The Manager tracks sessions and watcher objects as needed.
 func (m *Manager) expandConfigSource(ctx context.Context, cfgSrc configsource.ConfigSource, s string) (interface{}, error) {
-	cfgSrcName, selector, params, err := parseCfgSrc(s)
+	cfgSrcName, selector, paramsParser, err := parseCfgSrc(s)
 	if err != nil {
 		return nil, err
 	}
@@ -366,7 +366,25 @@ func (m *Manager) expandConfigSource(ctx context.Context, cfgSrc configsource.Co
 		m.sessions[cfgSrcName] = session
 	}
 
-	retrieved, err := session.Retrieve(ctx, selector, params)
+	// Recursively expand the selector.
+	var expandedSelector interface{}
+	expandedSelector, err = m.expandString(ctx, selector)
+	if err != nil {
+		return nil, fmt.Errorf("failed to process selector for config source %q selector %q: %w", cfgSrcName, selector, err)
+	}
+	if selector, ok = expandedSelector.(string); !ok {
+		return nil, fmt.Errorf("processed selector must be a string instead got a %T %v", expandedSelector, expandedSelector)
+	}
+
+	// Recursively resolve/parse any config source on the parameters.
+	if paramsParser != nil {
+		paramsParser, err = m.Resolve(ctx, paramsParser)
+		if err != nil {
+			return nil, fmt.Errorf("failed to process parameters for config source %q invocation %q: %w", cfgSrcName, s, err)
+		}
+	}
+
+	retrieved, err := session.Retrieve(ctx, selector, paramsParser)
 	if err != nil {
 		return nil, fmt.Errorf("config source %q failed to retrieve value: %w", cfgSrcName, err)
 	}
@@ -503,9 +521,6 @@ func (m *Manager) retrieveConfigSourceData(ctx context.Context, name, cfgSrcInvo
 		return nil, newErrUnknownConfigSource(name)
 	}
 
-	// Expand any env vars on the selector and parameters. Nested config source usage
-	// is not supported.
-	cfgSrcInvoke = expandEnvVars(cfgSrcInvoke)
 	retrieved, err := m.expandConfigSource(ctx, cfgSrc, cfgSrcInvoke)
 	if err != nil {
 		return nil, err
@@ -598,21 +613,6 @@ func parseParamsAsURLQuery(s string) (*configparser.Parser, error) {
 		}
 	}
 	return configparser.NewParserFromStringMap(params), err
-}
-
-// expandEnvVars is used to expand environment variables with the same syntax used
-// by configparser.Parser.
-func expandEnvVars(s string) string {
-	return os.Expand(s, func(str string) string {
-		// This allows escaping environment variable substitution via $$, e.g.
-		// - $FOO will be substituted with env var FOO
-		// - $$FOO will be replaced with $FOO
-		// - $$$FOO will be replaced with $ + substituted env var FOO
-		if str == "$" {
-			return "$"
-		}
-		return os.Getenv(str)
-	})
 }
 
 // osExpandEnv replicate the internal behavior of os.ExpandEnv when handling env
