@@ -1,0 +1,4 @@
+config_sources:
+  merge: # for now its config with the file names is hard coded on the test
+
+__root__: ${merge:override=true} # parameter is not used just to illustrate

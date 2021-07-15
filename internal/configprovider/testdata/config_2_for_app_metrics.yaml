@@ -1,0 +1,12 @@
+receivers:
+  statsd:
+
+exporters:
+  file:
+    path: ./test.json
+
+service:
+  pipelines:
+    metrics/app:
+      receivers: [statsd]
+      exporters: [file, awsemf]

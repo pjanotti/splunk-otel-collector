@@ -196,6 +196,8 @@ func NewManager(parser *configparser.Parser, logger *zap.Logger, buildInfo compo
 		return nil, err
 	}
 
+	// TODO: check if "config_sources" is already in use etc, it should be a reserved name for config sources
+	cfgSources["config_sources"] = newMetaConfigSource(logger, cfgSources)
 	return newManager(cfgSources), nil
 }
 
@@ -217,7 +219,21 @@ func (m *Manager) Resolve(ctx context.Context, parser *configparser.Parser) (*co
 			_ = m.retrieveEndAllSessions(ctx)
 			return nil, err
 		}
-		res.Set(k, value)
+
+		if k != "__root__" {
+			res.Set(k, value)
+			continue
+		}
+
+		// Injecting the data at the root level, it must be a map
+		rootMap, ok := value.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("attempt to inject a non-map at the root level %T", value)
+		}
+
+		for rootKey, rootValue := range rootMap {
+			res.Set(rootKey, rootValue)
+		}
 	}
 
 	if errs := m.retrieveEndAllSessions(ctx); len(errs) > 0 {
@@ -503,9 +519,11 @@ func (m *Manager) retrieveConfigSourceData(ctx context.Context, name, cfgSrcInvo
 		return nil, newErrUnknownConfigSource(name)
 	}
 
-	// Expand any env vars on the selector and parameters. Nested config source usage
-	// is not supported.
-	cfgSrcInvoke = expandEnvVars(cfgSrcInvoke)
+	// Expand any env vars on the selector and parameters. Special case for the meta config source:
+	// it shouldn't use expandEnvVars here otherwise config source parameters will be expanded into ""
+	if _, ok := cfgSrc.(*metaConfigSource); !ok {
+		cfgSrcInvoke = expandEnvVars(cfgSrcInvoke)
+	}
 	retrieved, err := m.expandConfigSource(ctx, cfgSrc, cfgSrcInvoke)
 	if err != nil {
 		return nil, err

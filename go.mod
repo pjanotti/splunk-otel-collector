@@ -10,6 +10,7 @@ require (
 	github.com/hashicorp/vault v1.7.0
 	github.com/hashicorp/vault-plugin-auth-gcp v0.9.0
 	github.com/hashicorp/vault/api v1.1.0
+	github.com/knadh/koanf v1.1.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/sapmexporter v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/signalfxexporter v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/splunkhecexporter v0.29.0

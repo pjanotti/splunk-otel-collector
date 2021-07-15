@@ -1,0 +1,4 @@
+config_sources:
+  tstcfgsrc:
+
+__root__:  ${tstcfgsrc:valid_yaml_string}
