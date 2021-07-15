@@ -7,3 +7,6 @@ __root__: |
   sources:
     - $include:./testdata/config_1_for_container_insights.yaml
     - $include:./testdata/config_2_for_app_metrics.yaml
+
+# Alternative oneline syntax:
+# __root__: ${config_sources:merge?sources=$include:./testdata/config_1_for_container_insights.yaml&sources=$include:./testdata/config_2_for_app_metrics.yaml}
