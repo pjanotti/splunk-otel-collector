@@ -17,7 +17,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/extension/observer/hostobserver v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/extension/observer/k8sobserver v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/extension/storage v0.29.0 // indirect
-	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata v0.29.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata v0.51.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sprocessor v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/metricstransformprocessor v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.29.0
@@ -42,7 +42,7 @@ require (
 	github.com/signalfx/signalfx-agent v1.0.1-0.20210617144543-be16994eef6b
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cast v1.3.1
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	go.etcd.io/etcd v0.5.0-alpha.5.0.20200425165423-262c93980547
 	go.opentelemetry.io/collector v0.29.0
 	go.uber.org/zap v1.17.0

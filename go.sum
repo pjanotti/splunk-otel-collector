@@ -1613,8 +1613,9 @@ github.com/open-telemetry/opentelemetry-collector-contrib/internal/stanza v0.29.
 github.com/open-telemetry/opentelemetry-collector-contrib/internal/stanza v0.29.0/go.mod h1:+G479sKMkGIddn4wvds27PNOnxQoVMmMnkNlj9nktBw=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/batchperresourceattr v0.29.0 h1:I70hcYPa+SdtPaApu1OAdffFySvTGiPetWAt7m7zLdw=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/batchperresourceattr v0.29.0/go.mod h1:HbNvwOWb+zEZZCK/Klcg8cSMbvMEOuj11hSyLIhkzIw=
-github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata v0.29.0 h1:IBPpUDkpFi1VscTSf+3sFmdKF+jkEr8lH2jHoDHq3Nw=
 github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata v0.29.0/go.mod h1:4S/VjNAnMokpg4Yz/V3q2WC017ACGfkELA3K4HoSkWM=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata v0.51.0 h1:2hkbJ1dH4w1Ik+XYj2V4bn3gFSeYPdVd3HfXBZYV9+8=
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/experimentalmetricmetadata v0.51.0/go.mod h1:CvjdSn/C3xnmDTMBUgI9AIFyyyZXckno0gbS1sLmG34=
 github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sprocessor v0.29.0 h1:vtVjlKDsMLf7zhrC6VL0Fpe6UMZ8fjLiv2XAzldM+5U=
 github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sprocessor v0.29.0/go.mod h1:tO6Hz1A9+f+sqLe/eiNfOplMIjuQVxx3S6hbFGZ7/KI=
 github.com/open-telemetry/opentelemetry-collector-contrib/processor/metricstransformprocessor v0.29.0 h1:vWZUxjPoo/MhED4O0VUMtk0Dt893ML4/D4J9QtoeSQM=
@@ -2043,8 +2044,9 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/stretchr/testify v1.7.1 h1:5TQK59W5E3v0r2duFAb7P95B6hEeOyEnHRa8MjYSMTY=
+github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stripe/safesql v0.0.0-20171221195208-cddf355596fe/go.mod h1:q7b2n0JmzM1mVGfcYpanfVb2j23cXZeWFxcILPn3JV4=
 github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
