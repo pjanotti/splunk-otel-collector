@@ -3,8 +3,8 @@ module github.com/signalfx/splunk-otel-collector
 go 1.16
 
 require (
-	github.com/cenkalti/backoff/v4 v4.1.1
-	github.com/fsnotify/fsnotify v1.4.9
+	github.com/cenkalti/backoff/v4 v4.1.3
+	github.com/fsnotify/fsnotify v1.5.4
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-zookeeper/zk v1.0.2
 	github.com/hashicorp/vault v1.7.0
@@ -22,7 +22,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/metricstransformprocessor v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/carbonreceiver v0.29.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/collectdreceiver v0.29.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/collectdreceiver v0.59.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fluentforwardreceiver v0.29.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver v0.29.0
@@ -41,12 +41,12 @@ require (
 	github.com/signalfx/golib/v3 v3.3.33
 	github.com/signalfx/signalfx-agent v1.0.1-0.20210617144543-be16994eef6b
 	github.com/sirupsen/logrus v1.8.1
-	github.com/spf13/cast v1.3.1
-	github.com/stretchr/testify v1.7.0
+	github.com/spf13/cast v1.5.0
+	github.com/stretchr/testify v1.8.0
 	go.etcd.io/etcd v0.5.0-alpha.5.0.20200425165423-262c93980547
-	go.opentelemetry.io/collector v0.29.0
-	go.uber.org/zap v1.17.0
-	golang.org/x/sys v0.0.0-20210611083646-a4fc73990273
+	go.opentelemetry.io/collector v0.59.0
+	go.uber.org/zap v1.23.0
+	golang.org/x/sys v0.0.0-20220808155132-1c4a2a72c664
 	gopkg.in/yaml.v2 v2.4.0
 )
 
