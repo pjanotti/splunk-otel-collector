@@ -3,9 +3,12 @@ module github.com/signalfx/splunk-otel-collector/tests
 go 1.16
 
 require (
-	github.com/docker/docker v20.10.7+incompatible
+	github.com/containerd/containerd v1.6.16 // indirect
+	github.com/docker/docker v23.0.0+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/google/uuid v1.2.0
+	github.com/moby/patternmatcher v0.5.0 // indirect
+	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jmxreceiver v0.29.0
 	github.com/signalfx/com_signalfx_metrics_protobuf v0.0.2
 	github.com/signalfx/signalfx-go v1.8.0
