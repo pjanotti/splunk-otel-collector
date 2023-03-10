@@ -35,7 +35,7 @@ jobs:
 
       - name: Launch IIS in Docker container
         run: |
-          docker run --rm -it -p 8000:80 aspnetnetfxapp
+          docker run --rm -p 8000:80 aspnetnetfxapp
 
       - name: Check IIS aspnetfxapp
         run: |
