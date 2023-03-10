@@ -1,0 +1,38 @@
+name: zeroconfig-test
+
+on:
+  push:
+    branches: [ add-zeroconfig-aspnetfx-test ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3.0.3
+        with:
+          dotnet-version: | 
+            6.0.x
+            7.0.x
+
+      - name: Build test application
+        working-directory: tests/zeroconfig/windows/testdata/apps/
+        run: |
+          msbuild .\AspNet.WebApi.NetFramework\AspNet.WebApi.NetFramework.csproj /p:Configuration=Release /p:Platform=AnyCPU /p:OutputPath=..\bin
+
+      - name: Build Dockerfile
+        working-directory: tests/zeroconfig/windows/testdata/
+        run: |
+          docker build -t aspnetfxapp .
+
+      - name: Launch IIS in Docker container
+        run: |
+          docker run --rm -it -p 8000:80 aspnetnetfxapp
+
+      - name: Check IIS aspnetfxapp
+        run: |
+          curl http://localhost:8000/aspnetfxapp/api/values
