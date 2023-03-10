@@ -19,6 +19,9 @@ jobs:
             6.0.x
             7.0.x
 
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
       - name: Build test application
         working-directory: tests/zeroconfig/windows/testdata/apps/
         run: |
