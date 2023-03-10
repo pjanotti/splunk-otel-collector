@@ -12,12 +12,13 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v3
 
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3.0.3
-        with:
-          dotnet-version: | 
-            6.0.x
-            7.0.x
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1.1.1
+
+      - name: Restore NuGet packages
+        working-directory: tests/zeroconfig/windows/testdata/apps/
+        run: |
+          nuget restore
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
