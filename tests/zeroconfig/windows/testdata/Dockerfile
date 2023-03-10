@@ -1,6 +1,6 @@
 # escape=`
 
-ARG windowscontainer_version=ltsc2019
+ARG windowscontainer_version=ltsc2022
 FROM mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-${windowscontainer_version}
 
 COPY apps/bin/_PublishedWebsites/AspNet.WebApi.NetFramework/ /apps/aspnetfx
