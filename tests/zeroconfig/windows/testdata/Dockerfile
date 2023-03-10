@@ -10,4 +10,4 @@ SHELL [ "powershell", "-Command" ]
 COPY apps/bin/_PublishedWebsites/AspNet.WebApi.NetFramework/ /apps/aspnetfx
 
 # Add test application to the Default Web Site
-RUN \Windows\System32\inetsrv\appcmd add app /site.name:'Default Web Site' /path:/aspnetfxapp /physicalPath:'\apps\aspnetfx\'
+RUN \Windows\System32\inetsrv\appcmd add app /site.name:\"Default Web Site\" /path:/aspnetfxapp /physicalPath:\"c:\apps\aspnetfx\"
