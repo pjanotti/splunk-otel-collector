@@ -23,9 +23,6 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
-
       - name: Build test application
         working-directory: tests/zeroconfig/windows/testdata/apps/
         run: |
