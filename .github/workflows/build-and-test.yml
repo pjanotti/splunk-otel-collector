@@ -558,7 +558,7 @@ jobs:
           nuget restore
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v1.3
 
       - name: Build test application
         working-directory: tests/zeroconfig/windows/testdata/apps/
