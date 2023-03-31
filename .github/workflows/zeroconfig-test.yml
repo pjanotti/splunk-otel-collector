@@ -6,11 +6,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  windows-zc-e2e-test:
     runs-on: windows-2022
+    needs: [ windows-msi ]
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v3
+
+      - name: Download Splunk OTel Collector msi artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: msi-build
+          path: ./tests/zeroconfig/windows/testdata/docker-setup/
+
+      - name: Copy install.ps1 to docker-setup folder
+        run: |
+          cp ./internal/buildscripts/packaging/installer/install.ps1 ./tests/zeroconfig/windows/testdata/docker-setup/
 
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1.1.1

@@ -532,6 +532,51 @@ jobs:
             throw "Failed to uninstall fluentdwinsvc."
           }
 
+  windows-zc-e2e-test:
+    runs-on: windows-2022
+    needs: [ windows-msi ]
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Download Splunk OTel Collector msi artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: msi-build
+          path: ./tests/zeroconfig/windows/testdata/docker-setup/
+
+      - name: Copy install.ps1 to docker-setup folder
+        run: |
+          cp ./internal/buildscripts/packaging/installer/install.ps1 ./tests/zeroconfig/windows/testdata/docker-setup/
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1.1.1
+
+      - name: Restore NuGet packages
+        working-directory: tests/zeroconfig/windows/testdata/apps/
+        run: |
+          nuget restore
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build test application
+        working-directory: tests/zeroconfig/windows/testdata/apps/
+        run: |
+          msbuild .\AspNet.WebApi.NetFramework\AspNet.WebApi.NetFramework.csproj /p:Configuration=Release /p:Platform=AnyCPU /p:OutputPath=..\bin
+
+      - name: Create the firewall rule for the testutils OTLP sink
+        run: |
+          New-NetFirewallRule -DisplayName 'zc-iis-test' -Direction Inbound -LocalAddress 10.1.1.1 -LocalPort 4318 -Protocol TCP -Action Allow -Profile Any
+
+      - name: Run the test
+        run: |
+           go test -timeout 30m -run ^TestWindowsIISInstrumentation$ -count 1 -v github.com/signalfx/splunk-otel-collector/tests/zeroconfig/windows
+
+      - name: Create the firewall rule for the testutils OTLP sink
+        run: |
+          Remove-NetFirewallRule -DisplayName 'zc-iis-test'
+
   docker-otelcol:
     name: docker-otelcol
     # Use 20.04.5 until https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/16450 is resolved
