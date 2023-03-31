@@ -26,78 +26,72 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/signalfx/splunk-otel-collector/tests/testutils"
 	"github.com/signalfx/splunk-otel-collector/tests/testutils/telemetry"
 )
 
-const (
-	container_version string = "ltsc2019"
-
-	otlpContainerEndpoint string = "host.docker.internal:" + otlpPort
-	otlpHostEndpoint      string = "localhost:" + otlpPort
-	otlpPort              string = "23456"
-
-	test_container_name string = "windows-iis-test-container"
-	test_image_name     string = "windows-iis-test-image"
-)
-
 func TestWindowsIISInstrumentation(t *testing.T) {
 	// WARNING:
+	//
 	// 1. Testcontainers for Go doesn't support Windows containers, see https://github.com/testcontainers/testcontainers-go/issues/948
 	//    In light of that will issue docker commands via exec.Command.
+	//
 	// 2. The test uses the default configuration fo the collector that uses signalfx to export metrics.
-	//    To avoid building an (expected to be) short lived signalfx sink the test launches another collector
-	//    that receives the signals from the instrumented container. This way the test can leverage the existing
-	//    OTLP sink.
+	//    To avoid building an (expected to be) short lived signalfx sink the test launches a Docker compose
+	//    configuration that runs a splunk-otel-collector that receives the O11y signals from the instrumented container.
+	//    This way the test can leverage the existing testutils OTLP sink.
 
 	// Set the Docker "context"
 	os.Chdir(path.Join(".", "testdata"))
 	defer os.Chdir("..")
 
-	expectedResourceMetrics, err := telemetry.LoadResourceMetrics("expected_resource_metrics.yaml")
-	require.NoError(t, err)
+	requireNoErrorExecCommand(t, "docker", "compose", "build")
 
-	cmd := exec.Command(
-		"docker", "build", ".",
-		"-t", test_image_name,
-		"-f", "Dockerfile",
-		"--build-arg", "windowscontainer_version="+container_version)
-	var out strings.Builder
-	cmd.Stdout = &out
-	err = cmd.Run()
-	t.Log(out.String())
-	require.NoError(t, err)
-
-	out.Reset()
-	cmd = exec.Command("docker", "run", "--rm", "--detach", "-p", "8000:80", "--name", test_container_name, test_image_name)
-	cmd.Stdout = &out
-	err = cmd.Run()
-	container_id := out.String()
-	t.Log(container_id)
-	require.NoError(t, err)
+	requireNoErrorExecCommand(t, "docker", "compose", "up", "--detach")
 	defer func() {
-		cmd := exec.Command("docker", "stop", test_container_name)
-		var out strings.Builder
-		cmd.Stdout = &out
-		err := cmd.Run()
-		t.Logf("Stopping %s ID %s", test_container_name, out.String())
-		require.NoError(t, err)
+		requireNoErrorExecCommand(t, "docker", "compose", "down")
 	}()
 
-	otlp, err := testutils.NewOTLPReceiverSink().WithEndpoint(otlpHostEndpoint).Build()
+	// A firewall rule must be in place for the OTLP Endpoint to be visible to the Docker compose containers.
+	// Administrative rights are necessary to create the rule. The rul can be created via the following
+	// PowerShell command:
+	//
+	// New-NetFirewallRule -DisplayName 'zc-iis-test' -Direction Inbound -LocalAddress 10.1.1.1 -LocalPort 4318 -Protocol TCP -Action Allow -Profile Any
+	//
+	// The command to remove the rule is:
+	//
+	// Remove-NetFirewallRule -DisplayName 'zc-iis-test'
+	//
+	// The OTLP also requires the Docker compose network to be created before it is initialized, since
+	// the address is part of that network.
+	//
+	otlp, err := testutils.NewOTLPReceiverSink().WithEndpoint("10.1.1.1:4318").Build()
 	require.NoError(t, err)
+	require.NoError(t, otlp.Start())
 	defer func() {
 		require.Nil(t, otlp.Shutdown())
 	}()
-	require.NoError(t, otlp.Start())
 
+	// Wait until the splunk-otel-collector is up: relying on the entrypoint of the image
+	// can have the request happening before the collector is ready.
+	assert.Eventually(t, func() bool {
+		httpClient := &http.Client{}
+		req, err := http.NewRequest("GET", "http://localhost:13133/health_check", nil)
+		require.NoError(t, err)
+		resp, err := httpClient.Do(req)
+		if err != nil {
+			return false
+		}
+		defer resp.Body.Close()
+		return resp.StatusCode == http.StatusOK
+	}, 30*time.Second, 100*time.Millisecond)
+
+	// Make a GET request to the ASP.NET app on the Windows IIS container
 	httpClient := &http.Client{}
-
-	// GET request to the ASP.NET app
-	url := "http://localhost:8000/aspnetfxapp/api/values"
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", "http://localhost:8000/aspnetfxapp/api/values", nil)
 	require.NoError(t, err)
 	resp, err := httpClient.Do(req)
 	require.NoError(t, err)
@@ -105,5 +99,16 @@ func TestWindowsIISInstrumentation(t *testing.T) {
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 	t.Log("ASP.NET HTTP Request succeeded")
 
-	require.NoError(t, otlp.AssertAllMetricsReceived(t, *expectedResourceMetrics, 15*time.Second))
+	expectedResourceMetrics, err := telemetry.LoadResourceMetrics("expected_resource_metrics.yaml")
+	require.NoError(t, err)
+	require.NoError(t, otlp.AssertAllMetricsReceived(t, *expectedResourceMetrics, 30*time.Second))
+}
+
+func requireNoErrorExecCommand(t *testing.T, name string, arg ...string) {
+	cmd := exec.Command(name, arg...)
+	var out strings.Builder
+	cmd.Stdout = &out
+	err := cmd.Run()
+	t.Log(out.String())
+	require.NoError(t, err)
 }

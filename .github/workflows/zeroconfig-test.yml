@@ -28,15 +28,14 @@ jobs:
         run: |
           msbuild .\AspNet.WebApi.NetFramework\AspNet.WebApi.NetFramework.csproj /p:Configuration=Release /p:Platform=AnyCPU /p:OutputPath=..\bin
 
-      - name: Build Dockerfile
-        working-directory: tests/zeroconfig/windows/testdata/
+      - name: Create the firewall rule for the testutils OTLP sink
         run: |
-          docker build -t aspnetfxapp .
+          New-NetFirewallRule -DisplayName 'zc-iis-test' -Direction Inbound -LocalAddress 10.1.1.1 -LocalPort 4318 -Protocol TCP -Action Allow -Profile Any
 
-      - name: Launch IIS in Docker container
+      - name: Run the test
         run: |
-          docker run --rm --detach -p 8000:80 aspnetfxapp
+           go test -timeout 30m -run ^TestWindowsIISInstrumentation$ -count 1 -v github.com/signalfx/splunk-otel-collector/tests/zeroconfig/windows
 
-      - name: Check IIS aspnetfxapp
+      - name: Create the firewall rule for the testutils OTLP sink
         run: |
-          curl http://localhost:8000/aspnetfxapp/api/values
+          Remove-NetFirewallRule -DisplayName 'zc-iis-test'
