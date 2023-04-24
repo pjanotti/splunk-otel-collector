@@ -18,26 +18,6 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
-type ResourceTraces struct {
-	ResourceSpans []ResourceSpans `yaml:"resource_spans"`
-}
-
-type ResourceSpans struct {
-	Resource   Resource     `yaml:",inline,omitempty"`
-	ScopeSpans []ScopeSpans `yaml:"scope_spans"`
-}
-
-type ScopeSpans struct {
-	Scope InstrumentationScope `yaml:"instrumentation_scope,omitempty"`
-	Spans []Span               `yaml:"spans,omitempty"`
-}
-
-type Span struct {
-	Name       string          `yaml:"name,omitempty"`
-	Kind       ptrace.SpanKind `yaml:"kind,omitempty"`
-	Attributes *map[string]any `yaml:"attributes,omitempty"`
-}
-
 // PDataToResourceTraces returns a ResourceTraces item generated from ptrace.Traces content.
 func PDataToResourceTraces(pdataTraces ...ptrace.Traces) (ResourceTraces, error) {
 	resourceTraces := ResourceTraces{}
@@ -64,7 +44,6 @@ func PDataToResourceTraces(pdataTraces ...ptrace.Traces) (ResourceTraces, error)
 					spanAttrs := sanitizeAttributes(pdataSpan.Attributes().AsRaw())
 					span := Span{
 						Name:       pdataSpan.Name(),
-						Kind:       pdataSpan.Kind(),
 						Attributes: &spanAttrs,
 					}
 					scopedSpans.Spans = append(scopedSpans.Spans, span)

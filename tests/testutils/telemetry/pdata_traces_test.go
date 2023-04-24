@@ -21,7 +21,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.opentelemetry.io/collector/pdata/ptrace"
 )
 
 func TestPDataToResourceTracesHappyPath(t *testing.T) {
@@ -45,13 +44,11 @@ func TestPDataToResourceTracesHappyPath(t *testing.T) {
 
 	fstScopeFstSpan := fstScopeSpans.Spans[0]
 	assert.Equal(t, "span_one", fstScopeFstSpan.Name)
-	assert.Equal(t, ptrace.SpanKindClient, fstScopeFstSpan.Kind)
 	fstScopeFstSpanAttributes := *fstScopeFstSpan.Attributes
 	assertExpectedAttributes(t, fstScopeFstSpanAttributes)
 
 	fstScopeSndSpan := fstScopeSpans.Spans[1]
 	assert.Equal(t, "span_two", fstScopeSndSpan.Name)
-	assert.Equal(t, ptrace.SpanKindServer, fstScopeSndSpan.Kind)
 
 	sndScopeSpans := fstResourceSpans.ScopeSpans[1]
 	assert.Equal(t, "instrumentation_scope_two", sndScopeSpans.Scope.Name)
@@ -60,7 +57,6 @@ func TestPDataToResourceTracesHappyPath(t *testing.T) {
 
 	sndScopeFstSpan := sndScopeSpans.Spans[0]
 	assert.Equal(t, "span_one", sndScopeFstSpan.Name)
-	assert.Equal(t, ptrace.SpanKindClient, sndScopeFstSpan.Kind)
 }
 
 func assertExpectedAttributes(t *testing.T, attrs map[string]any) {
