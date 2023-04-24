@@ -1,0 +1,29 @@
+resource_spans:
+- attributes:
+    bool: true
+    double: 123.45
+    int: 123
+    "null": null
+    string: a_string
+  scope_spans:
+  - instrumentation_scope:
+      attributes: {}
+      name: instrumentation_scope_one
+      version: instrumentation_scope_one_version
+    spans:
+    - name: span_one
+      attributes:
+        bool: true
+        double: 123.45
+        int: 123
+        "null": null
+        string: a_string
+    - name: span_two
+      attributes: {}
+  - instrumentation_scope:
+      attributes: {}
+      name: instrumentation_scope_two
+      version: instrumentation_scope_two_version
+    spans:
+    - name: span_one
+      attributes: {}
