@@ -83,3 +83,68 @@ func LoadResourceTraces(path string) (*ResourceTraces, error) {
 	// TODO: loaded.Validate()
 	return &loaded, nil
 }
+
+func FlattenResourceTraces(resourceTracesSlice ...ResourceTraces) ResourceTraces {
+	flattened := ResourceTraces{}
+
+	var resourceHashes []string
+	// maps of resource hashes to objects
+	resources := map[string]Resource{}
+	resourceHashToScopeSpans := map[string][]ScopeSpans{}
+
+	// flatten by Resource
+	for _, resourceTraces := range resourceTracesSlice {
+		for _, resourceSpans := range resourceTraces.ResourceSpans {
+			resourceHash := resourceSpans.Resource.Hash()
+			if _, ok := resources[resourceHash]; !ok {
+				resources[resourceHash] = resourceSpans.Resource
+				resourceHashes = append(resourceHashes, resourceHash)
+			}
+			resourceHashToScopeSpans[resourceHash] = append(resourceHashToScopeSpans[resourceHash], resourceSpans.ScopeSpans...)
+		}
+	}
+
+	// flatten by InstrumentationScope
+	for _, resourceHash := range resourceHashes {
+		resource := resources[resourceHash]
+		resourceSpans := ResourceSpans{
+			Resource: resource,
+		}
+
+		var ilHashes []string
+		// maps of hashes to object
+		ils := map[string]InstrumentationScope{}
+		ilSpans := map[string][]Span{}
+		for _, ilss := range resourceHashToScopeSpans[resourceHash] {
+			ilHash := ilss.Scope.Hash()
+			if _, ok := ils[ilHash]; !ok {
+				ils[ilHash] = ilss.Scope
+				ilHashes = append(ilHashes, ilHash)
+			}
+			if ilss.Spans == nil {
+				ilss.Spans = []Span{}
+			}
+			ilSpans[ilHash] = append(ilSpans[ilHash], ilss.Spans...)
+		}
+
+		// flatten by Span
+		for _, ilHash := range ilHashes {
+			il := ils[ilHash]
+			allILSpans := ilSpans[ilHash]
+			scopeSpans := ScopeSpans{
+				Scope: il,
+				Spans: allILSpans,
+			}
+			resourceSpans.ScopeSpans = append(resourceSpans.ScopeSpans, scopeSpans)
+		}
+
+		flattened.ResourceSpans = append(flattened.ResourceSpans, resourceSpans)
+	}
+
+	return flattened
+}
+
+func (resourceTraces ResourceTraces) ContainsAll(expected ResourceTraces) (bool, error) {
+	// TODO:
+	return true, nil
+}
