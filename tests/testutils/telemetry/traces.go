@@ -16,6 +16,7 @@ package telemetry
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v2"
@@ -33,7 +34,7 @@ type ResourceSpans struct {
 	ScopeSpans []ScopeSpans `yaml:"scope_spans"`
 }
 
-// ScopeSpans is the top legel grouping of trace data given InstrumentationScope
+// ScopeSpans is the top level grouping of trace data given InstrumentationScope
 // and associated collection of Span instances.
 type ScopeSpans struct {
 	Scope InstrumentationScope `yaml:"instrumentation_scope,omitempty"`
@@ -144,7 +145,102 @@ func FlattenResourceTraces(resourceTracesSlice ...ResourceTraces) ResourceTraces
 	return flattened
 }
 
+func (span Span) RelaxedEquals(toCompare Span) bool {
+	return span.Name == toCompare.Name && attributesAreEqual(span.Attributes, toCompare.Attributes)
+}
+
+func (span Span) String() string {
+	out, err := yaml.Marshal(span)
+	if err != nil {
+		panic(err)
+	}
+	return string(out)
+}
+
+// ContainsAll determines if everything in `expected` ResourceTraces is in the receiver ResourceTraces
+// item (i.e. expected ⊆ resourceTraces). Neither guarantees equivalence, nor that expected contains all of received
+// (i.e. is not an expected ≣ resourceTraces nor resourceTraces ⊆ expected check).
+// Span equivalence is based on RelaxedEquals() check: fields not in expected (e.g. unit, type, value, etc.)
+// are not compared to received, but all labels must match.
+// For better reliability, it's advised that both ResourceTraces items have been flattened by FlattenResourceTraces.
 func (resourceTraces ResourceTraces) ContainsAll(expected ResourceTraces) (bool, error) {
-	// TODO:
+	var missingResources []string
+	missingInstrumentationScopes := map[string]struct{}{}
+	var missingSpans []string
+
+	for _, expectedResourceSpans := range expected.ResourceSpans {
+		resourceMatched := false
+		for _, resourceSpans := range resourceTraces.ResourceSpans {
+			if expectedResourceSpans.Resource.Equals(resourceSpans.Resource) {
+				resourceMatched = true
+				innerMissingInstrumentationScopes := map[string]struct{}{}
+				for _, expectedILS := range expectedResourceSpans.ScopeSpans {
+					matchingInstrumentationScope := ""
+					for _, ils := range resourceSpans.ScopeSpans {
+						if expectedILS.Scope.Equals(ils.Scope) {
+							matchingInstrumentationScope = ils.Scope.String()
+							for _, expectedSpan := range expectedILS.Spans {
+								spanFound := false
+								for _, span := range ils.Spans {
+									if expectedSpan.RelaxedEquals(span) {
+										spanFound = true
+									}
+								}
+								if !spanFound {
+									missingSpans = append(missingSpans, expectedSpan.String())
+								}
+							}
+							if len(missingSpans) != 0 {
+								return false, fmt.Errorf(
+									"%v doesn't contain all of %v. Missing Spans: %s",
+									ils.Spans, expectedILS.Spans, missingSpans)
+							}
+						}
+					}
+					if matchingInstrumentationScope != "" {
+						// no longer globally missing
+						delete(missingInstrumentationScopes, matchingInstrumentationScope)
+					} else {
+						innerMissingInstrumentationScopes[expectedILS.Scope.String()] = struct{}{}
+					}
+				}
+				if len(innerMissingInstrumentationScopes) != 0 {
+					if expectedResourceSpans.Resource.Attributes == nil {
+						// since nil attributes will be equal with everything
+						// keep track of inner missing scopes globally to be
+						// removed above
+						for k, v := range innerMissingInstrumentationScopes {
+							missingInstrumentationScopes[k] = v
+						}
+						continue
+					}
+					var missingIS []string
+					for k := range innerMissingInstrumentationScopes {
+						missingIS = append(missingIS, k)
+					}
+					return false, fmt.Errorf(
+						"%v doesn't contain all of %v. Missing InstrumentationScopes: %s",
+						resourceSpans.ScopeSpans, expectedResourceSpans.ScopeSpans, missingIS,
+					)
+				}
+			}
+		}
+		if !resourceMatched {
+			missingResources = append(missingResources, expectedResourceSpans.Resource.String())
+		}
+	}
+	if len(missingInstrumentationScopes) != 0 {
+		var missingIS []string
+		for k := range missingInstrumentationScopes {
+			missingIS = append(missingIS, k)
+		}
+		return false, fmt.Errorf("Missing InstrumentationScopes: %s", missingIS)
+	}
+	if len(missingResources) != 0 {
+		return false, fmt.Errorf(
+			"%v doesn't contain all of %v. Missing resources: %s",
+			resourceTraces.ResourceSpans, expected.ResourceSpans, missingResources,
+		)
+	}
 	return true, nil
 }
