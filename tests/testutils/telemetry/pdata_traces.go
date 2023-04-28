@@ -32,7 +32,7 @@ func PDataToResourceTraces(pdataTraces ...ptrace.Traces) (ResourceTraces, error)
 			for j := 0; j < pdataScopedSpans.Len(); j++ {
 				scopedSpans := ScopeSpans{Spans: []Span{}}
 				pdataScopedSpan := pdataScopedSpans.At(j)
-				attrs := pdataScopedSpan.Scope().Attributes().AsRaw()
+				attrs := sanitizeAttributes(pdataScopedSpan.Scope().Attributes().AsRaw())
 				scopedSpans.Scope = InstrumentationScope{
 					Name:       pdataScopedSpan.Scope().Name(),
 					Version:    pdataScopedSpan.Scope().Version(),

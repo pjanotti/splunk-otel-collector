@@ -27,27 +27,26 @@ type ResourceTraces struct {
 	ResourceSpans []ResourceSpans `yaml:"resource_spans"`
 }
 
-// ResourceSpans is the top level grouping of trace data given a Resource (set of attributes)
-// and associated ScopeSpans.
+// ResourceSpans is the top level grouping of trace data given a Resource (set of attributes) and associated ScopeSpans.
 type ResourceSpans struct {
 	Resource   Resource     `yaml:",inline,omitempty"`
 	ScopeSpans []ScopeSpans `yaml:"scope_spans"`
 }
 
-// ScopeSpans is the top level grouping of trace data given InstrumentationScope
-// and associated collection of Span instances.
+// ScopeSpans is the top level grouping of trace data given InstrumentationScope and associated collection of Span
+// instances.
 type ScopeSpans struct {
 	Scope InstrumentationScope `yaml:"instrumentation_scope,omitempty"`
 	Spans []Span               `yaml:"spans,omitempty"`
 }
 
-// Span is the trace content, here defined only with the fields required for
-// tests. Fields that server as IDs are not present.
+// Span is the trace content, here defined only with the fields required for tests.
 type Span struct {
 	Name       string          `yaml:"name,omitempty"`
 	Attributes *map[string]any `yaml:"attributes,omitempty"`
 }
 
+// SaveResourceTraces is a helper function that saves the ResourceTraces to an yaml file.
 func (rt *ResourceTraces) SaveResourceTraces(path string) error {
 	yamlData, err := yaml.Marshal(rt)
 	if err != nil {
@@ -62,6 +61,7 @@ func (rt *ResourceTraces) SaveResourceTraces(path string) error {
 	return nil
 }
 
+// LoadResourceTraces returns a ResourceTraces instance generated via parsing a valid yaml file at the provided path.
 func LoadResourceTraces(path string) (*ResourceTraces, error) {
 	traceFile, err := os.Open(path)
 	if err != nil {
@@ -80,11 +80,31 @@ func LoadResourceTraces(path string) (*ResourceTraces, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO: loaded.FillDefaultValues()
-	// TODO: loaded.Validate()
+
+	// Not all spans have data in their instrumentation scope. If a test requires version validation it should include
+	// it on the expected data. That's why there is no FillDefaultValues() for ResourceTraces.
+	//
+	// There is no parsing that requires validation so there isn't a Validate() method either.
+
 	return &loaded, nil
 }
 
+func (span Span) String() string {
+	out, err := yaml.Marshal(span)
+	if err != nil {
+		panic(err)
+	}
+	return string(out)
+}
+
+func (span Span) RelaxedEquals(toCompare Span) bool {
+	return span.Name == toCompare.Name && attributesAreEqual(span.Attributes, toCompare.Attributes)
+}
+
+// FlattenResourceTraces takes multiple instances of ResourceTraces and flattens them to only unique entries by
+// Resource, InstrumentationScope, and Span contents.
+// It will preserve order by removing subsequent occurrences of repeated items from the returned flattened
+// ResourceTraces item
 func FlattenResourceTraces(resourceTracesSlice ...ResourceTraces) ResourceTraces {
 	flattened := ResourceTraces{}
 
@@ -132,6 +152,9 @@ func FlattenResourceTraces(resourceTracesSlice ...ResourceTraces) ResourceTraces
 		for _, ilHash := range ilHashes {
 			il := ils[ilHash]
 			allILSpans := ilSpans[ilHash]
+			if allILSpans == nil {
+				allILSpans = []Span{}
+			}
 			scopeSpans := ScopeSpans{
 				Scope: il,
 				Spans: allILSpans,
@@ -143,18 +166,6 @@ func FlattenResourceTraces(resourceTracesSlice ...ResourceTraces) ResourceTraces
 	}
 
 	return flattened
-}
-
-func (span Span) RelaxedEquals(toCompare Span) bool {
-	return span.Name == toCompare.Name && attributesAreEqual(span.Attributes, toCompare.Attributes)
-}
-
-func (span Span) String() string {
-	out, err := yaml.Marshal(span)
-	if err != nil {
-		panic(err)
-	}
-	return string(out)
 }
 
 // ContainsAll determines if everything in `expected` ResourceTraces is in the receiver ResourceTraces
