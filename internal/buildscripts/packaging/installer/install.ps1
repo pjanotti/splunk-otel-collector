@@ -352,6 +352,9 @@ function start_service([string]$name, [string]$config_path=$config_path, [int]$m
                     break
                 } catch {
                     $err = $_.Exception.Message
+                    Write-Warning "===> Failed to start service: $err"
+                    Get-WinEvent System -MaxEvents 20 | Select-Object Message, ProviderName
+                    Get-WinEvent Application -MaxEvents 20 | Select-Object Message, ProviderName
                     if ($i -eq $max_attempts) {
                         $log_path = get_service_log_path -name "$name"
                         Write-Warning "An error occurred while trying to start the $name service:"
@@ -359,7 +362,7 @@ function start_service([string]$name, [string]$config_path=$config_path, [int]$m
                         Write-Warning "Please check $log_path for more details."
                         throw "$err"
                     } else {
-                        Stop-Service -Name "$name" -ErrorAction Ignore
+                        # Stop-Service -Name "$name" -ErrorAction Ignore
                         Start-Sleep -Seconds 10
                         continue
                     }
@@ -383,7 +386,7 @@ function stop_service([string]$name, [int]$max_attempts=3, [int]$timeout=60) {
                 $err = $_.Exception.Message
                 if ($i -eq $max_attempts) {
                     $log_path = get_service_log_path -name "$name"
-                    Write-Warning "An error occurred while trying to start the $name service:"
+                    Write-Warning "An error occurred while trying to stop the $name service:"
                     Write-Warning "$err"
                     Write-Warning "Please check $log_path for more details."
                     throw "$err"
