@@ -27,9 +27,9 @@ import (
 )
 
 func run(params otelcol.CollectorSettings) error {
-	if useInteractiveMode, err := checkWindowsService(); err != nil {
+	if isWindowsService, err := checkWindowsService(); err != nil {
 		return err
-	} else if useInteractiveMode {
+	} else if !isWindowsService {
 		return runInteractive(params)
 	} else {
 		return runService(params)
