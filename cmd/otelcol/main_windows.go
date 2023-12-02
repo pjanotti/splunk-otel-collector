@@ -42,7 +42,7 @@ func checkWindowsService() (bool, error) {
 	// be set in case running as a service is not possible or desired even
 	// though the current session is not detected to be interactive
 	if value, present := os.LookupEnv("NO_WINDOWS_SERVICE"); present && value != "0" {
-		return true, nil
+		return false, nil
 	}
 
 	if isWindowsService, err := svc.IsWindowsService(); err != nil {
