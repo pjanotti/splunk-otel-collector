@@ -83,6 +83,7 @@ function start_service([string]$name, [string]$config_path=$config_path, [int]$m
                         Write-Warning "An error occurred while trying to start the $name service:"
                         Write-Warning "$err"
                         Write-Warning "Please check $log_path for more details."
+                        Get-WinEvent Application -MaxEvents 50 | Select-Object *
                         throw "$err"
                     } else {
                         Stop-Service -Name "$name" -ErrorAction Ignore
