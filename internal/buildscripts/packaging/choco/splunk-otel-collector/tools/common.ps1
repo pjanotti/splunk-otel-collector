@@ -78,12 +78,14 @@ function start_service([string]$name, [string]$config_path=$config_path, [int]$m
                     break
                 } catch {
                     $err = $_.Exception.Message
-                    if ($i -eq $max_attempts) {
+                    Write-Warning "===> Failed to start service: $err"
+                    Get-WinEvent System -MaxEvents 20 | Select-Object Message, ProviderName
+                    Get-WinEvent Application -MaxEvents 20 | Select-Object Message, ProviderName
+                if ($i -eq $max_attempts) {
                         $log_path = get_service_log_path -name "$name"
                         Write-Warning "An error occurred while trying to start the $name service:"
                         Write-Warning "$err"
                         Write-Warning "Please check $log_path for more details."
-                        Get-WinEvent Application -MaxEvents 50 | Select-Object *
                         throw "$err"
                     } else {
                         Stop-Service -Name "$name" -ErrorAction Ignore
