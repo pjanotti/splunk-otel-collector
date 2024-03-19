@@ -199,7 +199,7 @@ jobs:
           $msi_path = Resolve-Path .\dist\splunk-otel-collector*.msi
           Test-Path $msi_path
           Write-Host "Installing $msi_path ..."
-          $process = Start-Process -Wait -PassThru msiexec "/i `"$msi_path`" /qn /l*v msi-install.log"
+          $process = Start-Process -Wait -PassThru msiexec "/i `"$msi_path`" /qn /l*v msi-install.log SPLUNK_ACCESS_TOKEN=fakeToken"
           if ($process.ExitCode -ne 0) {
             throw "MSI installation failed with exit code $($process.ExitCode)"
           }
@@ -207,17 +207,6 @@ jobs:
       - name: "In case of failure: display the install logs"
         if: ${{ failure() }}
         run: Get-Content msi-install.log
-
-      - name: Set environment variables required to start the collector service
-        run: |
-          $ErrorActionPreference = 'Stop'
-          [Environment]::SetEnvironmentVariable("SPLUNK_ACCESS_TOKEN", "123456e", "Machine")
-          [Environment]::SetEnvironmentVariable("SPLUNK_API_URL", "https://non.existent.for.tests", "Machine")
-          [Environment]::SetEnvironmentVariable("SPLUNK_HEC_TOKEN", "098765e", "Machine")
-          [Environment]::SetEnvironmentVariable("SPLUNK_HEC_URL", "https://non.existent.for.tests/v1/log", "Machine")
-          [Environment]::SetEnvironmentVariable("SPLUNK_INGEST_URL", "https://non.existent.for.tests", "Machine")
-          [Environment]::SetEnvironmentVariable("SPLUNK_TRACE_URL", "https://non.existent.for.tests/v2/trace", "Machine")
-          [Environment]::SetEnvironmentVariable("SPLUNK_BUNDLE_DIR", "%ProgramFiles%\Splunk\OpenTelemetry", "Machine")
 
       - name: Start the collector service
         run:
