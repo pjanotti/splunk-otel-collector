@@ -91,8 +91,3 @@ public class CustomActions
         }
     }
 }
-
-/*
-dotnet publish SplunkCustomActions.csproj  --use-current-runtime -c Release -o bin\
-MakeSfxCA.exe $PWD\bin\SplunkCustomActions.CA.dll 'C:\Program Files (x86)\WiX Toolset v3.14\SDK\x64\sfxca.dll' $PWD\bin\SplunkCustomActions.dll $PWD\bin\Microsoft.Deployment.WindowsInstaller.dll $PWD\CustomAction.config
-*/
