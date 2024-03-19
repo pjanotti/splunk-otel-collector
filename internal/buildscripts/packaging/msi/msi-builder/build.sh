@@ -183,7 +183,7 @@ parse_args_and_build() {
     find /home/wine -name "MakeSfxCA*"
 
     customActionsDll="${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.CA.dll"
-    /home/wine/wix/sdk/MakeSfxCA.exe "${customActionsDll}" \
+    wine /home/wine/wix/sdk/MakeSfxCA.exe "${customActionsDll}" \
         "/home/wine/wix/sdk/x64/sfxca.dll" \
         "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.dll" \
         "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/Microsoft.Deployment.WindowsInstaller.dll" \
