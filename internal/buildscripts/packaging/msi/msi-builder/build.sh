@@ -170,7 +170,11 @@ parse_args_and_build() {
 
     jmx_metrics_jar="${build_dir}/opentelemetry-java-contrib-jmx-metrics.jar"
 
+    which heat
+
     cd ${WORK_DIR}
+    pwd
+    echo $WIX
     configFilesWsx="${build_dir}/configfiles.wsx"
     heat dir "$files_dir" -srd -sreg -gg -template fragment -cg ConfigFiles -dr INSTALLDIR -out "${configFilesWsx}"
 
