@@ -180,11 +180,11 @@ parse_args_and_build() {
     collectorWixObj="${build_dir}/splunk-otel-collector.wixobj"
     candle -arch x64 -out "${collectorWixObj//\//\\}" -dVersion="$version" -dOtelcol="$otelcol" -dJmxMetricsJar="$jmx_metrics_jar" "${WXS_PATH//\//\\}"
 
-    find /home/wine -name sfxca.dll
+    find /home/wine -name "MakeSfxCA*"
 
     customActionsDll="${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.CA.dll"
-    MakeSfxCA "${customActionsDll}" \
-        "~/.nuget/packages/wix/3.14.0/tools/sdk/x64/sfxca.dll" \
+    /home/wine/wix/sdk/MakeSfxCA.exe "${customActionsDll}" \
+        "/home/wine/wix/sdk/x64/sfxca.dll" \
         "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.dll" \
         "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/Microsoft.Deployment.WindowsInstaller.dll" \
         "${MSI_SRC_DIR}/SplunkCustomActions/CustomAction.config"
