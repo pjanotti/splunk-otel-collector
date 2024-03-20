@@ -171,6 +171,14 @@ parse_args_and_build() {
     jmx_metrics_jar="${build_dir}/opentelemetry-java-contrib-jmx-metrics.jar"
 
     cd ${WORK_DIR}
+
+    customActionsDll="${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.CA.dll"
+    wine /home/wine/wix/sdk/MakeSfxCA.exe "${customActionsDll}" \
+        "/home/wine/wix/sdk/x64/sfxca.dll" \
+        "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.dll" \
+        "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/Microsoft.Deployment.WindowsInstaller.dll" \
+        "${MSI_SRC_DIR}/SplunkCustomActions/CustomAction.config"
+
     configFilesWsx="${build_dir}/configfiles.wsx"
     heat dir "$files_dir" -srd -sreg -gg -template fragment -cg ConfigFiles -dr INSTALLDIR -out "${configFilesWsx//\//\\}"
 
@@ -179,15 +187,6 @@ parse_args_and_build() {
 
     collectorWixObj="${build_dir}/splunk-otel-collector.wixobj"
     candle -arch x64 -out "${collectorWixObj//\//\\}" -dVersion="$version" -dOtelcol="$otelcol" -dJmxMetricsJar="$jmx_metrics_jar" "${WXS_PATH//\//\\}"
-
-    find /home/wine -name "MakeSfxCA*"
-
-    customActionsDll="${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.CA.dll"
-    wine /home/wine/wix/sdk/MakeSfxCA.exe "${customActionsDll}" \
-        "/home/wine/wix/sdk/x64/sfxca.dll" \
-        "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.dll" \
-        "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/Microsoft.Deployment.WindowsInstaller.dll" \
-        "${MSI_SRC_DIR}/SplunkCustomActions/CustomAction.config"
 
     msi="${build_dir}/${msi_name}"
     light -ext WixUtilExtension.dll -sval -out "${msi//\//\\}" -b "${files_dir//\//\\}" "${collectorWixObj//\//\\}" "${configFilesWixObj//\//\\}"
