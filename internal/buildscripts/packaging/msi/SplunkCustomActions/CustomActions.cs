@@ -32,15 +32,6 @@ public class CustomActions
             return ActionResult.Success;
         }
 
-        // If SPLUNK_ACCESS_TOKEN is not set, fail the check.
-        var splunkToken = session["SPLUNK_ACCESS_TOKEN"];
-        session.Log("Info: SPLUNK_ACCESS_TOKEN=" + splunkToken);
-        if (string.IsNullOrWhiteSpace(splunkToken))
-        {
-            LogAndShowError(session, "SPLUNK_ACCESS_TOKEN must be specified.");
-            return ActionResult.Failure;
-        }
-
         // If SPLUNK_SETUP_COLLECTOR_MODE is not one of the expected values, fail the check.
         var collectorMode = session["SPLUNK_SETUP_COLLECTOR_MODE"] ?? string.Empty;
         session.Log("Info: SPLUNK_SETUP_COLLECTOR_MODE=" + collectorMode);
