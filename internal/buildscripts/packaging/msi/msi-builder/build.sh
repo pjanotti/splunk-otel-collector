@@ -162,13 +162,16 @@ parse_args_and_build() {
     if [ -z "$skip_build_dir_removal" ]; then
         unzip -d "$files_dir" "${OUTPUT_DIR}/agent-bundle_windows_amd64.zip"
         rm -f "${OUTPUT_DIR}/agent-bundle_windows_amd64.zip"
-
-        download_jmx_metric_gatherer "$jmx_metric_gatherer_release" "$build_dir"
     else
-        echo "Skipping unzipping agent bundle and downloading JMX Metric Gatherer"
+        echo "Skipping unzipping agent bundle"
     fi
 
     jmx_metrics_jar="${build_dir}/opentelemetry-java-contrib-jmx-metrics.jar"
+    if [ -f "${jmx_metrics_jar}" ]; then
+        echo "JMX Metric Gatherer already downloaded"
+    else
+        download_jmx_metric_gatherer "$jmx_metric_gatherer_release" "$build_dir"
+    fi
 
     cd ${WORK_DIR}
 

@@ -49,7 +49,16 @@ check_collector_svc_environment @{
   "SPLUNK_HEC_URL"          = "${ingest_url}/v1/log";
   "SPLUNK_HEC_TOKEN"        = "$access_token";
   "SPLUNK_BUNDLE_DIR"       = "${env:PROGRAMFILES}\Splunk\OpenTelemetry Collector\agent-bundle";
-  "SPLUNK_MEMORY_TOTAL_MIB" = "$memory";
+}
+
+if (![string]::IsNullOrWhitespace($memory)) {
+    check_collector_svc_environment["SPLUNK_MEMORY"] = "$memory"
+}
+
+if ($mode -eq "agent") {
+    check_collector_svc_environment["SPLUNK_LISTEN_INTERFACE"] = "127.0.0.1"
+} else {
+    check_collector_svc_environment["SPLUNK_LISTEN_INTERFACE"] = "0.0.0.0"
 }
 
 if ((service_running -name "splunk-otel-collector")) {
