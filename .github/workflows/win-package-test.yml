@@ -108,7 +108,7 @@ jobs:
           $sfxcaDll = "${WixPath}\SDK\x64\sfxca.dll"
           $Env:PATH = "${WixPath}\SDK;" + $Env:PATH
           $customActionBinDir = "$PWD\internal\buildscripts\packaging\msi\SplunkCustomActions\bin\Release"
-          MakeSfxCA.exe .\dist\SplunkCustomActions.CA.dll `
+          MakeSfxCA.exe "$PWD\dist\SplunkCustomActions.CA.dll" `
             "$sfxcaDll" `
             "$customActionBinDir\SplunkCustomActions.dll" `
             "$customActionBinDir\Microsoft.Deployment.WindowsInstaller.dll"
