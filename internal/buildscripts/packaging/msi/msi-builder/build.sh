@@ -172,13 +172,6 @@ parse_args_and_build() {
 
     cd ${WORK_DIR}
 
-    customActionsDll="${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.CA.dll"
-    wine /home/wine/wix/sdk/MakeSfxCA.exe "${customActionsDll}" \
-        "/home/wine/wix/sdk/x64/sfxca.dll" \
-        "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/SplunkCustomActions.dll" \
-        "${MSI_SRC_DIR}/SplunkCustomActions/bin/Release/Microsoft.Deployment.WindowsInstaller.dll" \
-        "${MSI_SRC_DIR}/SplunkCustomActions/CustomAction.config"
-
     configFilesWsx="${build_dir}/configfiles.wsx"
     heat dir "$files_dir" -srd -sreg -gg -template fragment -cg ConfigFiles -dr INSTALLDIR -out "${configFilesWsx//\//\\}"
 
