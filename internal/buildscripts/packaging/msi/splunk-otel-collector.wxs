@@ -90,6 +90,7 @@
                            <MultiStringValue>SPLUNK_HEC_URL=[SPLUNK_HEC_URL]</MultiStringValue>
                            <MultiStringValue>SPLUNK_TRACE_URL=[SPLUNK_TRACE_URL]</MultiStringValue>
                            <MultiStringValue>SPLUNK_BUNDLE_DIR=[SPLUNK_BUNDLE_DIR]</MultiStringValue>
+                           <MultiStringValue>SPLUNK_REALM=[SPLUNK_REALM]</MultiStringValue>
                         </RegistryValue>
                      </RegistryKey>
                   </Component>
