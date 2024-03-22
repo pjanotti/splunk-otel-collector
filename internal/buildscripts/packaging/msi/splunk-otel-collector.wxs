@@ -37,7 +37,7 @@
       <CustomAction Id="Set_SPLUNK_INGEST_URL" Property="SPLUNK_INGEST_URL" Value="https://ingest.[SPLUNK_REALM].signalfx.com"/>
       <CustomAction Id="Set_SPLUNK_HEC_URL"    Property="SPLUNK_HEC_URL"    Value="[SPLUNK_INGEST_URL]/v1/log"/>
       <CustomAction Id="Set_SPLUNK_TRACE_URL"  Property="SPLUNK_TRACE_URL"  Value="[SPLUNK_INGEST_URL]/v2/trace"/>
-      <CustomAction Id="Set_SPLUNK_BUNDLE_DIR" Property="SPLUNK_BUNDLE_DIR" Value="[INSTALLDIR]Splunk\OpenTelemetry Collector\agent-bundle" />
+      <CustomAction Id="Set_SPLUNK_BUNDLE_DIR" Property="SPLUNK_BUNDLE_DIR" Value="[INSTALLDIR]agent-bundle" />
 
       <!-- Condition Message="The SPLUNK_ACCESS_TOKEN property is required.">SPLUNK_ACCESS_TOKEN OR Installed</Condition -->
       <InstallExecuteSequence>
