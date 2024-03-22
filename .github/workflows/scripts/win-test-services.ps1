@@ -39,7 +39,7 @@ function service_running([string]$name) {
 $api_url = "https://api.${realm}.signalfx.com"
 $ingest_url = "https://ingest.${realm}.signalfx.com"
 
-expected_svc_env_vars = @{
+$expected_svc_env_vars = @{
   "SPLUNK_CONFIG"           = "${env:PROGRAMDATA}\Splunk\OpenTelemetry Collector\${mode}_config.yaml";
   "SPLUNK_ACCESS_TOKEN"     = "$access_token";
   "SPLUNK_REALM"            = "$realm";
@@ -52,16 +52,16 @@ expected_svc_env_vars = @{
 }
 
 if (![string]::IsNullOrWhitespace($memory)) {
-    expected_svc_env_vars["SPLUNK_MEMORY"] = "$memory"
+    $expected_svc_env_vars["SPLUNK_MEMORY"] = "$memory"
 }
 
 if ($mode -eq "agent") {
-    expected_svc_env_vars["SPLUNK_LISTEN_INTERFACE"] = "127.0.0.1"
+    $expected_svc_env_vars["SPLUNK_LISTEN_INTERFACE"] = "127.0.0.1"
 } else {
-    expected_svc_env_vars["SPLUNK_LISTEN_INTERFACE"] = "0.0.0.0"
+    $expected_svc_env_vars["SPLUNK_LISTEN_INTERFACE"] = "0.0.0.0"
 }
 
-check_collector_svc_environment expected_svc_env_vars
+check_collector_svc_environment $expected_svc_env_vars
 
 if ((service_running -name "splunk-otel-collector")) {
     write-host "splunk-otel-collector service is running."
