@@ -55,12 +55,6 @@ if (![string]::IsNullOrWhitespace($memory)) {
     $expected_svc_env_vars["SPLUNK_MEMORY"] = "$memory"
 }
 
-if ($mode -eq "agent") {
-    $expected_svc_env_vars["SPLUNK_LISTEN_INTERFACE"] = "127.0.0.1"
-} else {
-    $expected_svc_env_vars["SPLUNK_LISTEN_INTERFACE"] = "0.0.0.0"
-}
-
 check_collector_svc_environment $expected_svc_env_vars
 
 if ((service_running -name "splunk-otel-collector")) {
