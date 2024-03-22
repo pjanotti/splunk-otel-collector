@@ -52,7 +52,7 @@ $expected_svc_env_vars = @{
 }
 
 if (![string]::IsNullOrWhitespace($memory)) {
-    $expected_svc_env_vars["SPLUNK_MEMORY"] = "$memory"
+    $expected_svc_env_vars["SPLUNK_MEMORY_TOTAL_MIB"] = "$memory"
 }
 
 check_collector_svc_environment $expected_svc_env_vars
