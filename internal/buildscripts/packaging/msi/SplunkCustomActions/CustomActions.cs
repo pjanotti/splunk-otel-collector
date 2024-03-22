@@ -45,29 +45,6 @@ public class CustomActions
     }
 
     /// <summary>
-    /// Set the values of "automatic" properties, i.e. properties that require some logic to be set.
-    /// </summary>
-    /// <param name="session">Carries information about the current installation session.</param>
-    /// <returns>An action result that indicates success or failure of the operation.</returns>
-    [CustomAction]
-    public static ActionResult SetAutomaticProperties(Session session)
-    {
-        var listenInterface = session["SPLUNK_SETUP_LISTEN_INTERFACE"];
-        if (string.IsNullOrWhiteSpace(listenInterface))
-        {
-            var collectorMode = session["SPLUNK_SETUP_COLLECTOR_MODE"];
-            session["SPLUNK_SETUP_LISTEN_INTERFACE"] = collectorMode switch {
-                "agent" => "127.0.0.1",
-                "gateway" => "0.0.0.0",
-                // It is an internal error if it doesn't match any of the expected values.
-                _ => throw new InvalidOperationException("SPLUNK_SETUP_COLLECTOR_MODE must be either 'agent' or 'gateway'.")
-            };
-        }
-
-        return ActionResult.Success;
-    }
-
-    /// <summary>
     /// Helper to log and show error messages if the installation fails.
     /// When running in silent mode no dialog is shown.
     /// <summary>
