@@ -228,10 +228,13 @@ jobs:
             expected: "-mode agent -access_token fakeToken -realm us0 -memory $null -with_fluentd false"
 
           - install: "SPLUNK_SETUP_COLLECTOR_MODE=gateway SPLUNK_ACCESS_TOKEN=testing123"
-            expected: "-mode gateway -realm us0 -memory $null -with_fluentd false"
+            expected: "-mode gateway -access_token testing123 -realm us0 -memory $null -with_fluentd false"
 
-          - install: "SPLUNK_REALM=test"
-            expected: "-mode agent -realm test -memory $null -with_fluentd false"
+          - install: "SPLUNK_REALM=test SPLUNK_ACCESS_TOKEN=testing"
+            expected: "-mode agent -access_token testing -realm test -memory $null -with_fluentd false"
+
+          - install: "SPLUNK_INGEST_URL=https://fake.ingest.url SPLUNK_ACCESS_TOKEN=testing"
+            expected: "-mode agent -access_token testing -ingest_url \"https://fake.ingest.url\" -memory $null -with_fluentd false"
 
     steps:
       - name: Check out the codebase.
