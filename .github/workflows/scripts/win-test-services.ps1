@@ -4,7 +4,9 @@ param (
     [string]$realm = "test",
     [string]$memory = "512",
     [string]$with_fluentd = "true",
-    [string]$with_msi_uninstall_comments = ""
+    [string]$with_msi_uninstall_comments = "",
+    [string]$api_url = "https://api.${realm}.signalfx.com",
+    [string]$ingest_url = "https://ingest.${realm}.signalfx.com"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,9 +37,6 @@ function check_collector_svc_environment([hashtable]$expected_env_vars) {
 function service_running([string]$name) {
     return ((Get-CimInstance -ClassName win32_service -Filter "Name = '$name'" | Select Name, State).State -Eq "Running")
 }
-
-$api_url = "https://api.${realm}.signalfx.com"
-$ingest_url = "https://ingest.${realm}.signalfx.com"
 
 $expected_svc_env_vars = @{
   "SPLUNK_CONFIG"           = "${env:PROGRAMDATA}\Splunk\OpenTelemetry Collector\${mode}_config.yaml";
