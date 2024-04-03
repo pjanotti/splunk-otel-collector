@@ -68,8 +68,8 @@ public class CustomActions
         var optionalEnvironmentVariables = new Dictionary<string, string>();
         foreach (var key in optionalConfigurationKeys)
         {
-            var value = session[key];
-            if (!string.IsNullOrEmpty(value))
+            var value = session.CustomActionData[key];
+            if (!string.IsNullOrWhiteSpace(value))
             {
                 session.Log($"Info: Setting environment variable {key}={value}");
                 optionalEnvironmentVariables[key] = value;
