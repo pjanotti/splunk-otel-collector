@@ -461,7 +461,7 @@ msi-custom-actions-assemblies:
   dependencies: []
   script:
     - pushd ./internal/buildscripts/packaging/msi/SplunkCustomActions/
-    - dotnet publish ./SplunkCustomActions.csproj -c Release -o ./bin/Release
+    - dotnet publish ./src/SplunkCustomActions.csproj -c Release -o ./bin/Release
     - popd
   artifacts:
     name: msi-custom-actions-assemblies

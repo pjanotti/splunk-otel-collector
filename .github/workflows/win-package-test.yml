@@ -100,7 +100,8 @@ jobs:
       - name: Build Custom Actions
         working-directory: internal/buildscripts/packaging/msi/SplunkCustomActions
         run: |
-          dotnet publish ./SplunkCustomActions.csproj -c Release -o ./bin/Release
+          dotnet test ./test/SplunkCustomActionsTests.csproj -c Release
+          dotnet publish ./src/SplunkCustomActions.csproj -c Release -o ./bin/Release
 
       - name: Package Custom Actions
         run: |
