@@ -114,7 +114,7 @@ jobs:
             "${sfxcaDll}" `
             "${customActionBinDir}\SplunkCustomActions.dll" `
             "${customActionBinDir}\Microsoft.Deployment.WindowsInstaller.dll" `
-            "${customActionDir}\CustomAction.config"
+            "${customActionDir}\src\CustomAction.config"
 
       - uses: actions/upload-artifact@v4
         with:
