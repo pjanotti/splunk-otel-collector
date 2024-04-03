@@ -17,8 +17,7 @@ using Microsoft.Win32;
 public class MultiStringEnvironment : IDisposable
 {
     private readonly string _valueName;
-    private readonly RegistryKey _key;
-    private readonly RegistryKey _subkey;
+    private readonly RegistryKey _subKey;
 
     public MultiStringEnvironment() :
         this(RegistryHive.LocalMachine, @"SYSTEM\CurrentControlSet\Services\splunk-otel-collector", "Environment")
@@ -28,13 +27,15 @@ public class MultiStringEnvironment : IDisposable
     public MultiStringEnvironment(RegistryHive registryHive, string subKey, string valueName)
     {
         _valueName = valueName;
-        _key = RegistryKey.OpenBaseKey(registryHive, RegistryView.Registry64);
-        _subkey = _key.OpenSubKey(subKey, writable: true);
+        using var key = RegistryKey.OpenBaseKey(registryHive, RegistryView.Registry64)
+            ?? throw new InvalidOperationException($"Failed to open registry hive: {registryHive}");
+        _subKey = key.OpenSubKey(subKey, writable: true)
+            ?? throw new InvalidOperationException($"Failed to open the registry sub key: {subKey}");
     }
 
     public string[] GetEnvironmentValue()
     {
-        return (string[])(_subkey.GetValue(_valueName) ?? Array.Empty<string>());
+        return (string[])(_subKey.GetValue(_valueName) ?? Array.Empty<string>());
     }
 
     public void AddEnvironmentVariables(Dictionary<string, string> environmentVariables)
@@ -46,12 +47,11 @@ public class MultiStringEnvironment : IDisposable
         // Sort the environment variables to ensure that the order is consistent
         Array.Sort(newEnvironment, StringComparer.OrdinalIgnoreCase);
 
-        _subkey.SetValue(_valueName, newEnvironment, RegistryValueKind.MultiString);
+        _subKey.SetValue(_valueName, newEnvironment, RegistryValueKind.MultiString);
     }
 
     public void Dispose()
     {
-        _subkey.Close();
-        _key.Close();
+        _subKey.Close();
     }
 }

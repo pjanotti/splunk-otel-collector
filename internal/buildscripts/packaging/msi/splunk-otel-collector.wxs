@@ -61,7 +61,7 @@
          <Custom Action="Set_SPLUNK_BUNDLE_DIR" After="CostFinalize">NOT SPLUNK_BUNDLE_DIR</Custom>
          <!-- After files installation the registry is set for the service, check optional configurations -->
          <Custom Action="AddOptionalConfigurationsCustomActionData" Before="AddOptionalConfigurations" />
-         <Custom Action="AddOptionalConfigurations" After="InstallFiles" />
+         <Custom Action="AddOptionalConfigurations" After="WriteRegistryValues" />
       </InstallExecuteSequence>
 
       <MajorUpgrade DowngradeErrorMessage="A later version of the Splunk OpenTelemetry Collector is already installed. Setup will now exit."/>

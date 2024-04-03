@@ -21,7 +21,7 @@ public class MultiStringEnvironmentTests
     private const string TestValueName = "TestMultiString";
 
     [Fact]
-    public void GetEnvironmentValueTest()
+    public void GetEnvironmentValue()
     {
         try
         {
@@ -45,7 +45,7 @@ public class MultiStringEnvironmentTests
     }
 
     [Fact]
-    public void AddingOptionalConfigurationsTest()
+    public void AddingOptionalConfigurations()
     {
         try
         {
@@ -79,6 +79,16 @@ public class MultiStringEnvironmentTests
         {
             DeleteTestSubKey();
         }
+    }
+
+    [Fact]
+    public void DefaultConstructorShouldFail()
+    {
+        Action action = () => new MultiStringEnvironment();
+        action
+            .Should()
+            .Throw<InvalidOperationException>()
+            .WithMessage("Failed to open the registry sub key: SYSTEM\\CurrentControlSet\\Services\\splunk-otel-collector");
     }
 
     private void DeleteTestSubKey()
