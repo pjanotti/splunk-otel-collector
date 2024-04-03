@@ -12,7 +12,7 @@
       <!-- Load the Splunk custom actions -->
       <Binary Id="SplunkCustomActionsDll" SourceFile="$(sys.SOURCEFILEDIR)/SplunkCustomActions/bin/Release/SplunkCustomActions.CA.dll" />
       <CustomAction Id="CheckLaunchConditions" DllEntry="CheckLaunchConditions" BinaryKey="SplunkCustomActionsDll" Execute="immediate" />
-      <CustomAction Id="AddOptionalConfigurations"  DllEntry="CheckLaunchConditions" BinaryKey="SplunkCustomActionsDll" Execute="deferred" /> 
+      <CustomAction Id="AddOptionalConfigurations" DllEntry="AddOptionalConfigurations" BinaryKey="SplunkCustomActionsDll" Execute="deferred" /> 
 
       <!-- SPLUNK setup control properties -->
       <Property Id="SPLUNK_SETUP_COLLECTOR_MODE" Value="agent" Secure="yes" />
