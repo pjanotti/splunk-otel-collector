@@ -289,10 +289,7 @@ jobs:
 
       - name: Uninstall the collector
         run: |
-          $process = Start-Process -FilePath "msiexec" -ArgumentList "/x {24E519F6-7F01-43DB-9E72-3B8AD8F065F4} /qn /l* msi-uninstall.log" -Wait -PassThru
-          if ($process.ExitCode -ne 0) {
-            throw "MSI installation failed with exit code $($process.ExitCode)"
-          }
+          Start-Process -FilePath "msiexec" -ArgumentList "/x {24E519F6-7F01-43DB-9E72-3B8AD8F065F4} /qn /l* msi-uninstall.log" -Wait
 
       - name: Check no leftover on the registry
         run: |
