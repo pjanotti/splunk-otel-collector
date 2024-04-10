@@ -190,14 +190,10 @@ jobs:
           name: msi-build
           path: ./tests/zeroconfig/windows/testdata/docker-setup/
 
-      - name: Ensure port 55679 is available
+      - name: Ensure required ports in the dynamic range are available
         run: |
           $ErrorActionPreference = 'Continue'
-          netsh interface ip show excludedportrange protocol=tcp
-          Stop-Service winnat
-          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1
-          Start-Service winnat
-          netsh interface ip show excludedportrange protocol=tcp
+          & ${{ github.workspace }}\.github\workflows\scripts\win-required-ports.ps1
 
       - name: Get splunk-otel-dotnet latest release name
         id: dotnet-instrumentation
@@ -259,14 +255,10 @@ jobs:
           name: msi-build
           path: ./dist
 
-      - name: Ensure port 55679 is available
+      - name: Ensure required ports in the dynamic range are available
         run: |
           $ErrorActionPreference = 'Continue'
-          netsh interface ip show excludedportrange protocol=tcp
-          Stop-Service winnat
-          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1
-          Start-Service winnat
-          netsh interface ip show excludedportrange protocol=tcp
+          & ${{ github.workspace }}\.github\workflows\scripts\win-required-ports.ps1
 
       - name: Install the collector
         run: |
@@ -341,14 +333,10 @@ jobs:
           name: msi-build
           path: ./dist
 
-      - name: Ensure port 55679 is available
+      - name: Ensure required ports in the dynamic range are available
         run: |
           $ErrorActionPreference = 'Continue'
-          netsh interface ip show excludedportrange protocol=tcp
-          Stop-Service winnat
-          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1
-          Start-Service winnat
-          netsh interface ip show excludedportrange protocol=tcp
+          & ${{ github.workspace }}\.github\workflows\scripts\win-required-ports.ps1
 
       - name: Installation test
         env:
@@ -445,14 +433,10 @@ jobs:
           name: choco-build
           path: ./dist
 
-      - name: Ensure port 55679 is available
+      - name: Ensure required ports in the dynamic range are available
         run: |
           $ErrorActionPreference = 'Continue'
-          netsh interface ip show excludedportrange protocol=tcp
-          Stop-Service winnat
-          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1
-          Start-Service winnat
-          netsh interface ip show excludedportrange protocol=tcp
+          & ${{ github.workspace }}\.github\workflows\scripts\win-required-ports.ps1
 
       - name: Chocolatey ${{ matrix.SCENARIO }} test
         env:

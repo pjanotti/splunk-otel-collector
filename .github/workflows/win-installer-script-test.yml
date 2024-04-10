@@ -28,14 +28,10 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v4
 
-      - name: Ensure port 55679 is available
+      - name: Ensure required ports in the dynamic range are available
         run: |
           $ErrorActionPreference = 'Continue'
-          netsh interface ip show excludedportrange protocol=tcp
-          Stop-Service winnat
-          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1
-          Start-Service winnat
-          netsh interface ip show excludedportrange protocol=tcp
+          & ${{ github.workspace }}\.github\workflows\scripts\win-required-ports.ps1
 
       - name: Installation test
         run: |
