@@ -31,6 +31,9 @@ jobs:
       - name: Attempt to block a range used by the collector to repro the error
         run: netsh int ipv4 add excludedportrange protocol=tcp startport=55670 numberofports=10
 
+      - name: Check port exclusion ranges
+        run: netsh interface ipv4 show excludedportrange protocol=tcp
+
       - name: Installation test
         run: |
           $ErrorActionPreference = 'Stop'
