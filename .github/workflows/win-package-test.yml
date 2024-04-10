@@ -190,14 +190,14 @@ jobs:
           name: msi-build
           path: ./tests/zeroconfig/windows/testdata/docker-setup/
 
-      - name: Check port exclusion ranges pre-exclusion
-        run: netsh interface ipv4 show excludedportrange protocol=tcp
-
-      - name: Attempt to block a range used by the collector to repro the error
-        run: netsh int ipv4 add excludedportrange protocol=tcp startport=55679 numberofports=1
-
-      - name: Check port exclusion ranges post-exclusion
-        run: netsh interface ipv4 show excludedportrange protocol=tcp
+      - name: Ensure port 55679 is available
+        run: |
+          $ErrorActionPreference = 'Continue' `
+          netsh interface ip show excludeportrange protocol=tcp `
+          Stop-Service winnat `
+          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1 `
+          Start-Service winnat `
+          netsh interface ip show excludeportrange protocol=tcp
 
       - name: Get splunk-otel-dotnet latest release name
         id: dotnet-instrumentation
@@ -259,14 +259,14 @@ jobs:
           name: msi-build
           path: ./dist
 
-      - name: Check port exclusion ranges pre-exclusion
-        run: netsh interface ipv4 show excludedportrange protocol=tcp
-
-      - name: Attempt to block a range used by the collector to repro the error
-        run: netsh int ipv4 add excludedportrange protocol=tcp startport=55679 numberofports=1
-
-      - name: Check port exclusion ranges post-exclusion
-        run: netsh interface ipv4 show excludedportrange protocol=tcp
+      - name: Ensure port 55679 is available
+        run: |
+          $ErrorActionPreference = 'Continue' `
+          netsh interface ip show excludeportrange protocol=tcp `
+          Stop-Service winnat `
+          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1 `
+          Start-Service winnat `
+          netsh interface ip show excludeportrange protocol=tcp
 
       - name: Install the collector
         run: |
@@ -341,14 +341,14 @@ jobs:
           name: msi-build
           path: ./dist
 
-      - name: Check port exclusion ranges pre-exclusion
-        run: netsh interface ipv4 show excludedportrange protocol=tcp
-
-      - name: Attempt to block a range used by the collector to repro the error
-        run: netsh int ipv4 add excludedportrange protocol=tcp startport=55679 numberofports=1
-
-      - name: Check port exclusion ranges post-exclusion
-        run: netsh interface ipv4 show excludedportrange protocol=tcp
+      - name: Ensure port 55679 is available
+        run: |
+          $ErrorActionPreference = 'Continue' `
+          netsh interface ip show excludeportrange protocol=tcp `
+          Stop-Service winnat `
+          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1 `
+          Start-Service winnat `
+          netsh interface ip show excludeportrange protocol=tcp
 
       - name: Installation test
         env:
@@ -445,14 +445,14 @@ jobs:
           name: choco-build
           path: ./dist
 
-      - name: Check port exclusion ranges pre-exclusion
-        run: netsh interface ipv4 show excludedportrange protocol=tcp
-
-      - name: Attempt to block a range used by the collector to repro the error
-        run: netsh int ipv4 add excludedportrange protocol=tcp startport=55679 numberofports=1
-
-      - name: Check port exclusion ranges post-exclusion
-        run: netsh interface ipv4 show excludedportrange protocol=tcp
+      - name: Ensure port 55679 is available
+        run: |
+          $ErrorActionPreference = 'Continue' `
+          netsh interface ip show excludeportrange protocol=tcp `
+          Stop-Service winnat `
+          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1 `
+          Start-Service winnat `
+          netsh interface ip show excludeportrange protocol=tcp
 
       - name: Chocolatey ${{ matrix.SCENARIO }} test
         env:
