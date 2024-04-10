@@ -30,11 +30,11 @@ jobs:
 
       - name: Ensure port 55679 is available
         run: |
-          $ErrorActionPreference = 'Continue' `
-          netsh interface ip show excludedportrange protocol=tcp `
-          Stop-Service winnat `
-          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1 `
-          Start-Service winnat `
+          $ErrorActionPreference = 'Continue'
+          netsh interface ip show excludedportrange protocol=tcp
+          Stop-Service winnat
+          netsh interface ip add excludedportrange protocol=tcp startport=55679 numberofports=1
+          Start-Service winnat
           netsh interface ip show excludedportrange protocol=tcp
 
       - name: Installation test
