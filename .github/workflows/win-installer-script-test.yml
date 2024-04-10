@@ -28,10 +28,13 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v4
 
-      - name: Attempt to block a range used by the collector to repro the error
-        run: netsh int ipv4 add excludedportrange protocol=tcp startport=55670 numberofports=10
+      - name: Check port exclusion ranges pre-exclusion
+        run: netsh interface ipv4 show excludedportrange protocol=tcp
 
-      - name: Check port exclusion ranges
+      - name: Attempt to block a range used by the collector to repro the error
+        run: netsh int ipv4 add excludedportrange protocol=tcp startport=55679 numberofports=1
+
+      - name: Check port exclusion ranges post-exclusion
         run: netsh interface ipv4 show excludedportrange protocol=tcp
 
       - name: Installation test
