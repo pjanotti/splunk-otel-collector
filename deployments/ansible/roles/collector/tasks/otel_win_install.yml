@@ -22,6 +22,11 @@
     splunk_otel_collector_version: "{{version.content | b64decode }}"
   when: splunk_otel_collector_version == "latest"
 
+- name: Use MSI capabilities to install the collector if possible
+  set_fact:
+    use_splunk_collector_msi: true
+  when: splunk_otel_collector_version is version('0.98.0', '>=')
+
 - name: Get splunk-otel-collector for windows
   ansible.windows.win_get_url:
     url: "{{win_base_url}}/splunk-otel-collector/msi/{{package_stage}}/splunk-otel-collector-\
@@ -51,19 +56,26 @@
       SPLUNK_MEMORY_TOTAL_MIB="{{ splunk_memory_total_mib if splunk_memory_total_mib != '' else omit }}"
       SPLUNK_REALM="{{ splunk_realm if splunk_realm != '' else omit }}"
       SPLUNK_TRACE_URL="{{ splunk_trace_url if splunk_trace_url != '' else omit }}"
+    when: use_splunk_collector_msi is defined
 
 - name: Merge custom config into the default config
   ansible.builtin.import_tasks: config_override.yml
-  when: splunk_config_override != ''
+  when:
+    - use_splunk_collector_msi is undefined
+    - splunk_config_override != ''
 
 - name: Copy the custom config
   ansible.windows.win_copy:
     content: '{{ updated_config | to_nice_yaml (indent=2) }}'
     dest: "{{ splunk_otel_collector_config }}"
-  when: splunk_config_override != ''
+  when:
+    - use_splunk_collector_msi is undefined
+    - splunk_config_override != ''
 
 - name: Push Custom Config file for splunk-otel-collector, If provided
   ansible.windows.win_template:
     src: "{{splunk_otel_collector_config_source}}"
     dest: "{{splunk_otel_collector_config}}"
-  when: splunk_otel_collector_config_source != ""
+  when:
+    - use_splunk_collector_msi is undefined
+    - splunk_otel_collector_config_source != ""
