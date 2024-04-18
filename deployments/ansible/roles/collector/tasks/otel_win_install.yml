@@ -38,9 +38,26 @@
     use_proxy: "{{ win_use_proxy }}"
   register: otel_msi_package
 
-- name: Try debug expression
+- name: Try debug single expression
   set_fact:
     one_item: "{{ 'GOMEMLIMIT=' + gomemlimit if gomemlimit != '' else omit }}"
+
+- name: Try debug multiple expressions
+  set_fact:
+    multiple_items:
+      - SPLUNK_ACCESS_TOKEN={{ splunk_access_token }}
+      - "{{ 'SPLUNK_API_URL=' + splunk_api_url if splunk_api_url != '' else omit }}"
+      - "{{ 'GOMEMLIMIT=' + gomemlimit if gomemlimit != '' else omit }}"
+      - "{{ 'SPLUNK_BUNDLE_DIR='+ splunk_bundle_dir if splunk_bundle_dir != '' else omit }}"
+      - "{{ 'SPLUNK_COLLECTD_DIR=' + splunk_collectd_dir if splunk_collectd_dir != '' else omit }}"
+      - "{{ 'SPLUNK_CONFIG=' + splunk_otel_collector_config if splunk_otel_collector_config != '' else omit }}"
+      - "{{ 'SPLUNK_INGEST_URL=' + splunk_ingest_url if splunk_ingest_url != '' else omit }}"
+      - "{{ 'SPLUNK_HEC_TOKEN=' + splunk_hec_token if splunk_hec_token != '' else omit }}"
+      - "{{ 'SPLUNK_HEC_URL=' + splunk_hec_url if splunk_hec_url != '' else omit }}"
+      - "{{ 'SPLUNK_LISTEN_INTERFACE=' + splunk_listen_interface if splunk_listen_interface != '' else omit }}"
+      - "{{ 'SPLUNK_MEMORY_TOTAL_MIB=' + splunk_memory_total_mib if splunk_memory_total_mib != '' else omit }}"
+      - "{{ 'SPLUNK_REALM=' + splunk_realm if splunk_realm != '' else omit }}"
+      - "{{ 'SPLUNK_TRACE_URL=' + splunk_trace_url if splunk_trace_url != '' else omit }}"
 
 - name: Install splunk-otel-collector-msi
   when: splunk_collector_msi_is_configurable is defined
@@ -48,19 +65,19 @@
     path: "{{otel_msi_package.dest}}"
     state: present
     arguments:
-    - SPLUNK_ACCESS_TOKEN={{ splunk_access_token }}
-    - "{{ 'SPLUNK_API_URL=' + splunk_api_url if splunk_api_url != '' else omit }}"
-    - "{{ 'GOMEMLIMIT=' + gomemlimit if gomemlimit != '' else omit }}"
-    - "{{ 'SPLUNK_BUNDLE_DIR='+ splunk_bundle_dir if splunk_bundle_dir != '' else omit }}"
-    - "{{ 'SPLUNK_COLLECTD_DIR=' + splunk_collectd_dir if splunk_collectd_dir != '' else omit }}"
-    - "{{ 'SPLUNK_CONFIG=' + splunk_otel_collector_config if splunk_otel_collector_config != '' else omit }}"
-    - "{{ 'SPLUNK_INGEST_URL=' + splunk_ingest_url if splunk_ingest_url != '' else omit }}"
-    - "{{ 'SPLUNK_HEC_TOKEN=' + splunk_hec_token if splunk_hec_token != '' else omit }}"
-    - "{{ 'SPLUNK_HEC_URL=' + splunk_hec_url if splunk_hec_url != '' else omit }}"
-    - "{{ 'SPLUNK_LISTEN_INTERFACE=' + splunk_listen_interface if splunk_listen_interface != '' else omit }}"
-    - "{{ 'SPLUNK_MEMORY_TOTAL_MIB=' + splunk_memory_total_mib if splunk_memory_total_mib != '' else omit }}"
-    - "{{ 'SPLUNK_REALM=' + splunk_realm if splunk_realm != '' else omit }}"
-    - "{{ 'SPLUNK_TRACE_URL=' + splunk_trace_url if splunk_trace_url != '' else omit }}"
+      - SPLUNK_ACCESS_TOKEN={{ splunk_access_token }}
+      - "{{ 'SPLUNK_API_URL=' + splunk_api_url if splunk_api_url != '' else omit }}"
+      - "{{ 'GOMEMLIMIT=' + gomemlimit if gomemlimit != '' else omit }}"
+      - "{{ 'SPLUNK_BUNDLE_DIR='+ splunk_bundle_dir if splunk_bundle_dir != '' else omit }}"
+      - "{{ 'SPLUNK_COLLECTD_DIR=' + splunk_collectd_dir if splunk_collectd_dir != '' else omit }}"
+      - "{{ 'SPLUNK_CONFIG=' + splunk_otel_collector_config if splunk_otel_collector_config != '' else omit }}"
+      - "{{ 'SPLUNK_INGEST_URL=' + splunk_ingest_url if splunk_ingest_url != '' else omit }}"
+      - "{{ 'SPLUNK_HEC_TOKEN=' + splunk_hec_token if splunk_hec_token != '' else omit }}"
+      - "{{ 'SPLUNK_HEC_URL=' + splunk_hec_url if splunk_hec_url != '' else omit }}"
+      - "{{ 'SPLUNK_LISTEN_INTERFACE=' + splunk_listen_interface if splunk_listen_interface != '' else omit }}"
+      - "{{ 'SPLUNK_MEMORY_TOTAL_MIB=' + splunk_memory_total_mib if splunk_memory_total_mib != '' else omit }}"
+      - "{{ 'SPLUNK_REALM=' + splunk_realm if splunk_realm != '' else omit }}"
+      - "{{ 'SPLUNK_TRACE_URL=' + splunk_trace_url if splunk_trace_url != '' else omit }}"
 
 - name: Install splunk-otel-collector-msi-legacy
   when: splunk_collector_msi_is_configurable is undefined
