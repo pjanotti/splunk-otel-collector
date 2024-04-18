@@ -51,7 +51,8 @@
       - "{{ 'SPLUNK_HEC_TOKEN=' + splunk_hec_token if splunk_hec_token != '' else '' }}"
       - "{{ 'SPLUNK_HEC_URL=' + splunk_hec_url if splunk_hec_url != '' else '' }}"
       - "{{ 'SPLUNK_LISTEN_INTERFACE=' + splunk_listen_interface if splunk_listen_interface != '' else '' }}"
-      - "{{ 'SPLUNK_MEMORY_TOTAL_MIB=' + (splunk_memory_total_mib | string) if (splunk_memory_total_mib | string) != '' else '' }}"
+      - "{{ 'SPLUNK_MEMORY_TOTAL_MIB=' + (splunk_memory_total_mib | string)
+               if (splunk_memory_total_mib | string) != '' else '' }}"
       - "{{ 'SPLUNK_REALM=' + splunk_realm if splunk_realm != '' else '' }}"
       - "{{ 'SPLUNK_TRACE_URL=' + splunk_trace_url if splunk_trace_url != '' else '' }}"
 
@@ -71,7 +72,8 @@
       - "{{ 'SPLUNK_HEC_TOKEN=' + splunk_hec_token if splunk_hec_token != '' else '' }}"
       - "{{ 'SPLUNK_HEC_URL=' + splunk_hec_url if splunk_hec_url != '' else '' }}"
       - "{{ 'SPLUNK_LISTEN_INTERFACE=' + splunk_listen_interface if splunk_listen_interface != '' else '' }}"
-      - "{{ 'SPLUNK_MEMORY_TOTAL_MIB=' + (splunk_memory_total_mib | string) if (splunk_memory_total_mib | string) != '' else '' }}"
+      - "{{ 'SPLUNK_MEMORY_TOTAL_MIB=' + (splunk_memory_total_mib | string)
+              if (splunk_memory_total_mib | string) != '' else '' }}"
       - "{{ 'SPLUNK_REALM=' + splunk_realm if splunk_realm != '' else '' }}"
       - "{{ 'SPLUNK_TRACE_URL=' + splunk_trace_url if splunk_trace_url != '' else '' }}"
 
