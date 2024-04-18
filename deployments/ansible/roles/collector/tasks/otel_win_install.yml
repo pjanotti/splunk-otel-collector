@@ -44,6 +44,8 @@
     path: "{{otel_msi_package.dest}}"
     state: present
     arguments: >-
+      /qn
+      /norestart
       SPLUNK_ACCESS_TOKEN={{ splunk_access_token }}
       {{ 'SPLUNK_API_URL=' + splunk_api_url if splunk_api_url != '' else omit }}
       {{ 'GOMEMLIMIT=' + gomemlimit if gomemlimit != '' else omit }}
