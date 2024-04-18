@@ -38,10 +38,6 @@
     use_proxy: "{{ win_use_proxy }}"
   register: otel_msi_package
 
-- name: Try debug single expression
-  set_fact:
-    one_item: "{{ 'GOMEMLIMIT=' + gomemlimit if gomemlimit != '' else omit }}"
-
 - name: Try debug multiple expressions
   set_fact:
     multiple_items:
