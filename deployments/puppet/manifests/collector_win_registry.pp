@@ -1,5 +1,8 @@
 # Class for setting the registry values for the splunk-otel-collector service
 class splunk_otel_collector::collector_win_registry {
+  # Ensure splunk_otel_collector::collector_win_config_options is applied first
+  require splunk_otel_collector::collector_win_config_options
+
   $unordered_collector_env_vars = $splunk_otel_collector::collector_additional_env_vars.map |$var, $value| {
     "${var}=${value}"
   }
