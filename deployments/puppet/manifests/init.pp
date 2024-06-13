@@ -195,12 +195,15 @@ class splunk_otel_collector (
       subscribe => [File[$collector_config_dest, $env_file_path]],
     }
   } else {
-    file { $collector_config_dest:
-      source  => $collector_config_source,
-      require => Class['splunk_otel_collector::collector_win_install'],
-    }
+    required { 'splunk_otel_collector::collector_win_install': }
 
+    if $facts['collector_config_source_exists'] {
+      file { $collector_config_dest:
+        source  => $collector_config_source,
+      }
+    }
     -> class { 'splunk_otel_collector::collector_win_registry': }
+
 
     -> service { $collector_service_name:
       ensure    => true,
