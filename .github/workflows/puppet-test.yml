@@ -109,6 +109,8 @@ jobs:
       - name: Test puppet deployment
         id: pytest
         continue-on-error: true
+        env:
+          PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
         run: |
           distro="${{ matrix.DISTRO }}"
           if [[ "$distro" = "amazonlinux-2" ]]; then
@@ -122,12 +124,12 @@ jobs:
           fi
           python3 -u -m pytest -s --verbose -k "$tests" \
             internal/buildscripts/packaging/tests/deployments/puppet/puppet_test.py
-        env:
-          PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
 
       # qemu, networking, running systemd in containers, etc., can be flaky
       - name: Re-run failed tests
         if: ${{ steps.pytest.outcome == 'failure' }}
+        env:
+          PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
         run: |
           distro="${{ matrix.DISTRO }}"
           if [[ "$distro" = "amazonlinux-2" ]]; then
@@ -142,8 +144,6 @@ jobs:
           python3 -u -m pytest -s --verbose -k "$tests" \
             --last-failed \
             internal/buildscripts/packaging/tests/deployments/puppet/puppet_test.py
-        env:
-          PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
 
   puppet-test-windows:
     name: puppet-test-windows
@@ -157,6 +157,7 @@ jobs:
         OS: [ "windows-2022" ]
         PUPPET_RELEASE: [ "6.0.2", "7.21.0" ]
         TEST_CASE: [ "default", "custom_vars" ]
+        COLLECTOTR_VERSION: [ "0.86.0", "latest" ]
       fail-fast: false
     steps:
       - name: Check out the codebase.
@@ -175,19 +176,21 @@ jobs:
       - name: Test puppet deployment
         id: pytest
         continue-on-error: true
+        env:
+          PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
+          COLLECTOTR_VERSION: "${{ matrix.COLLECTOTR_VERSION }}"
         run: |
           pytest -s --verbose -m windows `
             -k ${{ matrix.TEST_CASE }} `
             internal/buildscripts/packaging/tests/deployments/puppet/puppet_test.py
-        env:
-          PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
 
       - name: Re-run failed tests
         if: ${{ steps.pytest.outcome == 'failure' }}
+        env:
+          PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
+          COLLECTOTR_VERSION: "${{ matrix.COLLECTOTR_VERSION }}"
         run: |
           pytest -s --verbose -m windows `
             --last-failed `
             -k ${{ matrix.TEST_CASE }} `
             internal/buildscripts/packaging/tests/deployments/puppet/puppet_test.py
-        env:
-          PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"

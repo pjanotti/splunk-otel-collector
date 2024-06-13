@@ -428,7 +428,7 @@ WIN_PUPPET_MODULE_SRC_DIR = os.path.join(REPO_DIR, "deployments", "puppet")
 WIN_PUPPET_MODULE_DEST_DIR = r"C:\ProgramData\PuppetLabs\code\environments\production\modules\splunk_otel_collector"
 WIN_INSTALL_DIR = r"C:\Program Files\Splunk\OpenTelemetry Collector"
 WIN_CONFIG_PATH = r"C:\ProgramData\Splunk\OpenTelemetry Collector\agent_config.yaml"
-
+COLLECTOR_VERSION = os.environ.get("COLLECTOR_VERSION", "latest") # TODO: Use the collector version for non-Windows tests.
 
 def run_win_puppet_setup(puppet_release):
     assert has_choco(), "choco not installed!"
@@ -459,15 +459,14 @@ def run_win_puppet_agent(config):
 
 @pytest.mark.windows
 @pytest.mark.skipif(sys.platform != "win32", reason="only runs on windows")
-@pytest.mark.parametrize("version", ["0.86.0", "latest"])
-def test_win_puppet_default(version):
+def test_win_puppet_default():
     run_win_puppet_setup(WIN_PUPPET_RELEASE)
 
     config = f"""
     class {{ splunk_otel_collector:
         splunk_access_token => '{SPLUNK_ACCESS_TOKEN}',
         splunk_realm => '{SPLUNK_REALM}',
-        collector_version => '{version}',
+        collector_version => '{COLLECTOR_VERSION}',
     }}
     """
     run_win_puppet_agent(config)
@@ -492,13 +491,12 @@ def test_win_puppet_default(version):
 
 @pytest.mark.windows
 @pytest.mark.skipif(sys.platform != "win32", reason="only runs on windows")
-@pytest.mark.parametrize("version", ["0.86.0", "latest"])
-def test_win_puppet_custom_vars(version):
+def test_win_puppet_custom_vars():
     run_win_puppet_setup(WIN_PUPPET_RELEASE)
 
     api_url = "https://fake-splunk-api.com"
     ingest_url = "https://fake-splunk-ingest.com"
-    config = CUSTOM_VARS_CONFIG.substitute(api_url=api_url, ingest_url=ingest_url, version=version)
+    config = CUSTOM_VARS_CONFIG.substitute(api_url=api_url, ingest_url=ingest_url, version=COLLECTOR_VERSION)
 
     run_win_puppet_agent(config)
 
