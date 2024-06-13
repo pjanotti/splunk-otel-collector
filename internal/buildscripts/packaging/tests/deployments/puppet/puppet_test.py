@@ -428,7 +428,7 @@ WIN_PUPPET_MODULE_SRC_DIR = os.path.join(REPO_DIR, "deployments", "puppet")
 WIN_PUPPET_MODULE_DEST_DIR = r"C:\ProgramData\PuppetLabs\code\environments\production\modules\splunk_otel_collector"
 WIN_INSTALL_DIR = r"C:\Program Files\Splunk\OpenTelemetry Collector"
 WIN_CONFIG_PATH = r"C:\ProgramData\Splunk\OpenTelemetry Collector\agent_config.yaml"
-COLLECTOR_VERSION = os.environ.get("COLLECTOR_VERSION", "latest") # TODO: Use the collector version for non-Windows tests.
+COLLECTOR_VERSION = os.environ.get("COLLECTOR_VERSION", "") # On windows the default is an empty string
 
 def run_win_puppet_setup(puppet_release):
     assert has_choco(), "choco not installed!"

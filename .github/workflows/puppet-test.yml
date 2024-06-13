@@ -157,7 +157,7 @@ jobs:
         OS: [ "windows-2022" ]
         PUPPET_RELEASE: [ "6.0.2", "7.21.0" ]
         TEST_CASE: [ "default", "custom_vars" ]
-        COLLECTOTR_VERSION: [ "0.86.0", "latest" ]
+        COLLECTOR_VERSION: [ "0.86.0", "" ]
       fail-fast: false
     steps:
       - name: Check out the codebase.
@@ -178,7 +178,7 @@ jobs:
         continue-on-error: true
         env:
           PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
-          COLLECTOTR_VERSION: "${{ matrix.COLLECTOTR_VERSION }}"
+          COLLECTOR_VERSION: "${{ matrix.COLLECTOR_VERSION }}"
         run: |
           pytest -s --verbose -m windows `
             -k ${{ matrix.TEST_CASE }} `
@@ -188,7 +188,7 @@ jobs:
         if: ${{ steps.pytest.outcome == 'failure' }}
         env:
           PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
-          COLLECTOTR_VERSION: "${{ matrix.COLLECTOTR_VERSION }}"
+          COLLECTOR_VERSION: "${{ matrix.COLLECTOR_VERSION }}"
         run: |
           pytest -s --verbose -m windows `
             --last-failed `
