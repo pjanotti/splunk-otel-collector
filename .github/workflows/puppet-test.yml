@@ -157,7 +157,7 @@ jobs:
         OS: [ "windows-2022" ]
         PUPPET_RELEASE: [ "6.0.2", "7.21.0" ]
         TEST_CASE: [ "default", "custom_vars" ]
-        COLLECTOR_VERSION: [ "0.86.0", "" ]
+        WIN_COLLECTOR_VERSION: [ "0.86.0", "latest" ]
       fail-fast: false
     steps:
       - name: Check out the codebase.
@@ -178,8 +178,9 @@ jobs:
         continue-on-error: true
         env:
           PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
-          COLLECTOR_VERSION: "${{ matrix.COLLECTOR_VERSION }}"
+          WIN_COLLECTOR_VERSION: "${{ matrix.WIN_COLLECTOR_VERSION }}"
         run: |
+          if ($Env:WIN_COLLECTOR_VERSION -eq 'latest') { $Env:WIN_COLLECTOR_VERSION="$(curl -sS https://dl.signalfx.com/splunk-otel-collector/msi/release/latest.txt)" }
           pytest -s --verbose -m windows `
             -k ${{ matrix.TEST_CASE }} `
             internal/buildscripts/packaging/tests/deployments/puppet/puppet_test.py
@@ -188,8 +189,9 @@ jobs:
         if: ${{ steps.pytest.outcome == 'failure' }}
         env:
           PUPPET_RELEASE: "${{ matrix.PUPPET_RELEASE }}"
-          COLLECTOR_VERSION: "${{ matrix.COLLECTOR_VERSION }}"
+          WIN_COLLECTOR_VERSION: "${{ matrix.WIN_COLLECTOR_VERSION }}"
         run: |
+          if ($Env:WIN_COLLECTOR_VERSION -eq 'latest') { $Env:WIN_COLLECTOR_VERSION="$(curl -sS https://dl.signalfx.com/splunk-otel-collector/msi/release/latest.txt)" }
           pytest -s --verbose -m windows `
             --last-failed `
             -k ${{ matrix.TEST_CASE }} `
