@@ -195,7 +195,7 @@ class splunk_otel_collector (
       subscribe => [File[$collector_config_dest, $env_file_path]],
     }
   } else {
-    if $collector_config_source != $default_win_config_file {
+    if $collector_config_source != $splunk_otel_collector::params::default_win_config_file {
       file { $collector_config_dest:
         source  => $collector_config_source,
         require => Class['splunk_otel_collector::collector_win_install'],
