@@ -14,24 +14,27 @@ class splunk_otel_collector::collector_win_config_options {
         'SPLUNK_TRACE_URL' => $splunk_otel_collector::splunk_trace_url,
     }
 
-    $ballast_size_mib = $splunk_otel_collector::collector_version != 'latest' and
+    $ballast_size_mib = if $splunk_otel_collector::collector_version != 'latest' and
         versioncmp($splunk_otel_collector::collector_version, '0.97.0') < 0 and
-        !$splunk_otel_collector::splunk_ballast_size_mib.strip().empty() ? {
-            true    => { 'SPLUNK_BALLAST_SIZE_MIB' => $splunk_otel_collector::splunk_ballast_size_mib },
-            default => {},
+        !$splunk_otel_collector::splunk_ballast_size_mib.strip().empty() {
+            { 'SPLUNK_BALLAST_SIZE_MIB' => $splunk_otel_collector::splunk_ballast_size_mib }
+        } else {
+            {}
         }
 
-    $gomemlimit = ($splunk_otel_collector::collector_version == 'latest' or
+    $gomemlimit = if ($splunk_otel_collector::collector_version == 'latest' or
         versioncmp($splunk_otel_collector::collector_version, '0.97.0') >= 0) and
-        !$splunk_otel_collector::gomemlimit.strip().empty() ? {
-            true    => { 'GOMEMLIMIT' => $splunk_otel_collector::gomemlimit },
-            default => {},
+        !$splunk_otel_collector::gomemlimit.strip().empty() {
+            { 'GOMEMLIMIT' => $splunk_otel_collector::gomemlimit }
+        } else {
+            {}
         }
 
-    $listen_interface = !$splunk_otel_collector::splunk_listen_interface.strip().empty() ? {
-        true    => { 'SPLUNK_LISTEN_INTERFACE' => $splunk_otel_collector::splunk_listen_interface },
-        default => {},
-    }
+    $listen_interface = if !$splunk_otel_collector::splunk_listen_interface.strip().empty() {
+            { 'SPLUNK_LISTEN_INTERFACE' => $splunk_otel_collector::splunk_listen_interface }
+        } else {
+            {}
+        }
 
     $collector_env_vars = stdlib::merge($base_env_vars, $ballast_size_mib, $gomemlimit, $listen_interface)
 }
