@@ -200,6 +200,11 @@ class splunk_otel_collector (
         source  => $collector_config_source,
         require => Class['splunk_otel_collector::collector_win_install'],
       }
+    } else {
+      file { $collector_config_dest:
+        ensure  => file,
+        require => Class['splunk_otel_collector::collector_win_install'],
+      }
     }
 
     -> class { 'splunk_otel_collector::collector_win_registry': }
