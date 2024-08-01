@@ -25,6 +25,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -58,10 +59,10 @@ type ConfigServer struct {
 	initial        map[string]any
 	effective      map[string]any
 	server         *http.Server
-	doneCh         chan struct{}
+	serverCount    atomic.Int64
+	serverShutdown sync.WaitGroup
 	initialMutex   sync.RWMutex
 	effectiveMutex sync.RWMutex
-	wg             sync.WaitGroup
 	once           sync.Once
 }
 
@@ -71,9 +72,9 @@ func NewConfigServer() *ConfigServer {
 		effective:      map[string]any{},
 		initialMutex:   sync.RWMutex{},
 		effectiveMutex: sync.RWMutex{},
-		wg:             sync.WaitGroup{},
+		serverCount:    atomic.Int64{},
+		serverShutdown: sync.WaitGroup{},
 		once:           sync.Once{},
-		doneCh:         make(chan struct{}),
 	}
 
 	mux := http.NewServeMux()
@@ -99,7 +100,7 @@ func (cs *ConfigServer) Convert(_ context.Context, conf *confmap.Conf) error {
 }
 
 func (cs *ConfigServer) OnNew() {
-	cs.wg.Add(1)
+	cs.serverCount.Add(1)
 }
 
 func (cs *ConfigServer) OnRetrieve(scheme string, retrieved map[string]any) {
@@ -155,8 +156,9 @@ func (cs *ConfigServer) start() {
 				return
 			}
 
+			cs.serverShutdown.Add(1)
 			go func() {
-				defer close(cs.doneCh)
+				defer cs.serverShutdown.Done()
 
 				httpErr := cs.server.Serve(listener)
 				if httpErr != http.ErrServerClosed {
@@ -164,19 +166,14 @@ func (cs *ConfigServer) start() {
 				}
 			}()
 
-			go func() {
-				cs.wg.Wait()
-				if cs.server != nil {
-					_ = cs.server.Close()
-				}
-
-			}()
-
 		})
 }
 
 func (cs *ConfigServer) OnShutdown() {
-	cs.wg.Done()
+	if cs.serverCount.Add(-1) == 0 {
+		_ = cs.server.Close()
+		cs.serverShutdown.Wait()
+	}
 }
 
 func (cs *ConfigServer) muxHandleFunc(configType ConfigType) func(http.ResponseWriter, *http.Request) {

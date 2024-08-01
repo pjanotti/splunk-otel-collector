@@ -95,13 +95,7 @@ func TestConfigServer_EnvVar(t *testing.T) {
 			cs.OnNew()
 
 			require.NoError(t, cs.Convert(context.Background(), confmap.NewFromStringMap(initial)))
-			defer func() {
-				cs.OnShutdown() // Call shutdown even if the server is not up.
-				if !tt.serverDown {
-					// Wait for the server to shutdown. Otherwise the port might be still in use.
-					<-cs.doneCh
-				}
-			}()
+			defer cs.OnShutdown()
 
 			endpoint := tt.endpoint
 			if endpoint == "" {
